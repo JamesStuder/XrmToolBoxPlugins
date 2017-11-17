@@ -55,10 +55,13 @@ namespace BulkAttachmentManagementPlugin
             DialogResult sfdResult = sfdCSVFile.ShowDialog();
             if(sfdResult == DialogResult.OK)
             {
+                pbMain.Minimum = 0;
+                pbMain.Maximum = lvMainOutput.Items.Count;
+                pbMain.Value = 0;
                 LocalFileSystemDAO lfsDAO = new LocalFileSystemDAO();
                 CSVExportService export = new CSVExportService();
                 lfsDAO.CreateLocalFile(sfdCSVFile.FileName);
-                export.ExportToCSV(lvMainOutput, sfdCSVFile.FileName);
+                export.ExportToCSV(lvMainOutput, sfdCSVFile.FileName, pbMain);
             }
         }
         #endregion
