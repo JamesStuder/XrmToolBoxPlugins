@@ -32,6 +32,8 @@
             this.rbUpload = new System.Windows.Forms.RadioButton();
             this.rbDownload = new System.Windows.Forms.RadioButton();
             this.gbStep2 = new System.Windows.Forms.GroupBox();
+            this.rbSpecificAttachments = new System.Windows.Forms.RadioButton();
+            this.rbAllAttachments = new System.Windows.Forms.RadioButton();
             this.butCSVBrowse = new System.Windows.Forms.Button();
             this.tbCSVLocation = new System.Windows.Forms.TextBox();
             this.gbStep3 = new System.Windows.Forms.GroupBox();
@@ -48,6 +50,7 @@
             this.butExport = new System.Windows.Forms.Button();
             this.ofdCVSFile = new System.Windows.Forms.OpenFileDialog();
             this.sfdCSVFile = new System.Windows.Forms.SaveFileDialog();
+            this.fbdMainFile = new System.Windows.Forms.FolderBrowserDialog();
             this.gbStep1.SuspendLayout();
             this.gbStep2.SuspendLayout();
             this.gbStep3.SuspendLayout();
@@ -71,9 +74,9 @@
             this.rbUpload.Name = "rbUpload";
             this.rbUpload.Size = new System.Drawing.Size(59, 17);
             this.rbUpload.TabIndex = 1;
-            this.rbUpload.TabStop = true;
             this.rbUpload.Text = "Upload";
             this.rbUpload.UseVisualStyleBackColor = true;
+            this.rbUpload.CheckedChanged += new System.EventHandler(this.rbUpload_CheckedChanged);
             // 
             // rbDownload
             // 
@@ -82,26 +85,52 @@
             this.rbDownload.Name = "rbDownload";
             this.rbDownload.Size = new System.Drawing.Size(73, 17);
             this.rbDownload.TabIndex = 0;
-            this.rbDownload.TabStop = true;
             this.rbDownload.Text = "Download";
             this.rbDownload.UseVisualStyleBackColor = true;
+            this.rbDownload.CheckedChanged += new System.EventHandler(this.rbDownload_CheckedChanged);
             // 
             // gbStep2
             // 
+            this.gbStep2.Controls.Add(this.rbSpecificAttachments);
+            this.gbStep2.Controls.Add(this.rbAllAttachments);
             this.gbStep2.Controls.Add(this.butCSVBrowse);
             this.gbStep2.Controls.Add(this.tbCSVLocation);
+            this.gbStep2.Enabled = false;
             this.gbStep2.Location = new System.Drawing.Point(174, 23);
             this.gbStep2.Name = "gbStep2";
-            this.gbStep2.Size = new System.Drawing.Size(462, 73);
+            this.gbStep2.Size = new System.Drawing.Size(562, 73);
             this.gbStep2.TabIndex = 1;
             this.gbStep2.TabStop = false;
-            this.gbStep2.Text = "Step 2: (Location of CSV)";
+            this.gbStep2.Text = "Step 2";
+            // 
+            // rbSpecificAttachments
+            // 
+            this.rbSpecificAttachments.AutoSize = true;
+            this.rbSpecificAttachments.Location = new System.Drawing.Point(119, 20);
+            this.rbSpecificAttachments.Name = "rbSpecificAttachments";
+            this.rbSpecificAttachments.Size = new System.Drawing.Size(125, 17);
+            this.rbSpecificAttachments.TabIndex = 3;
+            this.rbSpecificAttachments.Text = "Specific Attachments";
+            this.rbSpecificAttachments.UseVisualStyleBackColor = true;
+            this.rbSpecificAttachments.CheckedChanged += new System.EventHandler(this.rbSpecificAttachments_CheckedChanged);
+            // 
+            // rbAllAttachments
+            // 
+            this.rbAllAttachments.AutoSize = true;
+            this.rbAllAttachments.Location = new System.Drawing.Point(7, 20);
+            this.rbAllAttachments.Name = "rbAllAttachments";
+            this.rbAllAttachments.Size = new System.Drawing.Size(98, 17);
+            this.rbAllAttachments.TabIndex = 2;
+            this.rbAllAttachments.Text = "All Attachments";
+            this.rbAllAttachments.UseVisualStyleBackColor = true;
+            this.rbAllAttachments.CheckedChanged += new System.EventHandler(this.rbAllAttachments_CheckedChanged);
             // 
             // butCSVBrowse
             // 
-            this.butCSVBrowse.Location = new System.Drawing.Point(374, 29);
+            this.butCSVBrowse.Enabled = false;
+            this.butCSVBrowse.Location = new System.Drawing.Point(481, 41);
             this.butCSVBrowse.Name = "butCSVBrowse";
-            this.butCSVBrowse.Size = new System.Drawing.Size(75, 23);
+            this.butCSVBrowse.Size = new System.Drawing.Size(75, 20);
             this.butCSVBrowse.TabIndex = 1;
             this.butCSVBrowse.Text = "Browse";
             this.butCSVBrowse.UseVisualStyleBackColor = true;
@@ -109,15 +138,18 @@
             // 
             // tbCSVLocation
             // 
-            this.tbCSVLocation.Location = new System.Drawing.Point(6, 31);
+            this.tbCSVLocation.Enabled = false;
+            this.tbCSVLocation.Location = new System.Drawing.Point(7, 41);
             this.tbCSVLocation.Name = "tbCSVLocation";
-            this.tbCSVLocation.Size = new System.Drawing.Size(362, 20);
+            this.tbCSVLocation.ReadOnly = true;
+            this.tbCSVLocation.Size = new System.Drawing.Size(468, 20);
             this.tbCSVLocation.TabIndex = 0;
             // 
             // gbStep3
             // 
             this.gbStep3.Controls.Add(this.butRun);
-            this.gbStep3.Location = new System.Drawing.Point(656, 23);
+            this.gbStep3.Enabled = false;
+            this.gbStep3.Location = new System.Drawing.Point(742, 23);
             this.gbStep3.Name = "gbStep3";
             this.gbStep3.Size = new System.Drawing.Size(132, 73);
             this.gbStep3.TabIndex = 2;
@@ -138,7 +170,7 @@
             // 
             this.pbMain.Location = new System.Drawing.Point(27, 133);
             this.pbMain.Name = "pbMain";
-            this.pbMain.Size = new System.Drawing.Size(761, 23);
+            this.pbMain.Size = new System.Drawing.Size(847, 23);
             this.pbMain.TabIndex = 3;
             // 
             // lvMainOutput
@@ -151,7 +183,7 @@
             this.chErrorMessage});
             this.lvMainOutput.Location = new System.Drawing.Point(27, 185);
             this.lvMainOutput.Name = "lvMainOutput";
-            this.lvMainOutput.Size = new System.Drawing.Size(761, 603);
+            this.lvMainOutput.Size = new System.Drawing.Size(847, 603);
             this.lvMainOutput.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.lvMainOutput.TabIndex = 4;
             this.lvMainOutput.UseCompatibleStateImageBehavior = false;
@@ -175,7 +207,7 @@
             // chDownloadLocation
             // 
             this.chDownloadLocation.Text = "Download Location";
-            this.chDownloadLocation.Width = 152;
+            this.chDownloadLocation.Width = 239;
             // 
             // chErrorMessage
             // 
@@ -202,7 +234,7 @@
             // 
             // butExport
             // 
-            this.butExport.Location = new System.Drawing.Point(328, 805);
+            this.butExport.Location = new System.Drawing.Point(330, 794);
             this.butExport.Name = "butExport";
             this.butExport.Size = new System.Drawing.Size(128, 23);
             this.butExport.TabIndex = 7;
@@ -229,7 +261,7 @@
             this.Controls.Add(this.gbStep2);
             this.Controls.Add(this.gbStep1);
             this.Name = "PluginControl";
-            this.Size = new System.Drawing.Size(805, 853);
+            this.Size = new System.Drawing.Size(905, 826);
             this.gbStep1.ResumeLayout(false);
             this.gbStep1.PerformLayout();
             this.gbStep2.ResumeLayout(false);
@@ -262,5 +294,8 @@
         private System.Windows.Forms.Button butExport;
         private System.Windows.Forms.OpenFileDialog ofdCVSFile;
         private System.Windows.Forms.SaveFileDialog sfdCSVFile;
+        private System.Windows.Forms.RadioButton rbSpecificAttachments;
+        private System.Windows.Forms.RadioButton rbAllAttachments;
+        private System.Windows.Forms.FolderBrowserDialog fbdMainFile;
     }
 }

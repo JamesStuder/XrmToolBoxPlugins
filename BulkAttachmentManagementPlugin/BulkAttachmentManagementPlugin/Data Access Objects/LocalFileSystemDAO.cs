@@ -22,6 +22,7 @@ namespace BulkAttachmentManagementPlugin.Data_Access_Objects
             }
             return oGuids;
         }
+
         public void ExportResultsToCSV(List<OutputModel> oOutputModel, string filelocation, ProgressBar pBar)
         {
             //Insert header

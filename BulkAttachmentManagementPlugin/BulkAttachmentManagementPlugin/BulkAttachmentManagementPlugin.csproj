@@ -119,6 +119,7 @@
       <DependentUpon>PluginControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\CRMService.cs" />
     <Compile Include="Services\CSVExportService.cs" />
   </ItemGroup>
   <ItemGroup>
