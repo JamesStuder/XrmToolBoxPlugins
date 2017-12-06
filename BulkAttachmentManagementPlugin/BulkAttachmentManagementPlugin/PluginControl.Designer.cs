@@ -32,13 +32,13 @@
             this.rbUpload = new System.Windows.Forms.RadioButton();
             this.rbDownload = new System.Windows.Forms.RadioButton();
             this.gbStep2 = new System.Windows.Forms.GroupBox();
+            this.lbCSVLocation = new System.Windows.Forms.Label();
             this.rbSpecificAttachments = new System.Windows.Forms.RadioButton();
             this.rbAllAttachments = new System.Windows.Forms.RadioButton();
             this.butCSVBrowse = new System.Windows.Forms.Button();
             this.tbCSVLocation = new System.Windows.Forms.TextBox();
             this.gbStep3 = new System.Windows.Forms.GroupBox();
             this.butRun = new System.Windows.Forms.Button();
-            this.pbMain = new System.Windows.Forms.ProgressBar();
             this.lvMainOutput = new System.Windows.Forms.ListView();
             this.chDateTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.chGUID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -46,11 +46,13 @@
             this.chDownloadLocation = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.chErrorMessage = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.lbMainOutput = new System.Windows.Forms.Label();
-            this.lbProgress = new System.Windows.Forms.Label();
             this.butExport = new System.Windows.Forms.Button();
             this.ofdCVSFile = new System.Windows.Forms.OpenFileDialog();
             this.sfdCSVFile = new System.Windows.Forms.SaveFileDialog();
             this.fbdMainFile = new System.Windows.Forms.FolderBrowserDialog();
+            this.pbMain = new System.Windows.Forms.ProgressBar();
+            this.chRegardingEntity = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.chRegardID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.gbStep1.SuspendLayout();
             this.gbStep2.SuspendLayout();
             this.gbStep3.SuspendLayout();
@@ -70,6 +72,7 @@
             // rbUpload
             // 
             this.rbUpload.AutoSize = true;
+            this.rbUpload.Enabled = false;
             this.rbUpload.Location = new System.Drawing.Point(7, 44);
             this.rbUpload.Name = "rbUpload";
             this.rbUpload.Size = new System.Drawing.Size(59, 17);
@@ -91,6 +94,7 @@
             // 
             // gbStep2
             // 
+            this.gbStep2.Controls.Add(this.lbCSVLocation);
             this.gbStep2.Controls.Add(this.rbSpecificAttachments);
             this.gbStep2.Controls.Add(this.rbAllAttachments);
             this.gbStep2.Controls.Add(this.butCSVBrowse);
@@ -98,10 +102,18 @@
             this.gbStep2.Enabled = false;
             this.gbStep2.Location = new System.Drawing.Point(174, 23);
             this.gbStep2.Name = "gbStep2";
-            this.gbStep2.Size = new System.Drawing.Size(562, 73);
+            this.gbStep2.Size = new System.Drawing.Size(562, 88);
             this.gbStep2.TabIndex = 1;
             this.gbStep2.TabStop = false;
             this.gbStep2.Text = "Step 2";
+            // 
+            // lbCSVLocation
+            // 
+            this.lbCSVLocation.AutoSize = true;
+            this.lbCSVLocation.Location = new System.Drawing.Point(7, 44);
+            this.lbCSVLocation.Name = "lbCSVLocation";
+            this.lbCSVLocation.Size = new System.Drawing.Size(0, 13);
+            this.lbCSVLocation.TabIndex = 4;
             // 
             // rbSpecificAttachments
             // 
@@ -128,7 +140,7 @@
             // butCSVBrowse
             // 
             this.butCSVBrowse.Enabled = false;
-            this.butCSVBrowse.Location = new System.Drawing.Point(481, 41);
+            this.butCSVBrowse.Location = new System.Drawing.Point(481, 62);
             this.butCSVBrowse.Name = "butCSVBrowse";
             this.butCSVBrowse.Size = new System.Drawing.Size(75, 20);
             this.butCSVBrowse.TabIndex = 1;
@@ -139,7 +151,7 @@
             // tbCSVLocation
             // 
             this.tbCSVLocation.Enabled = false;
-            this.tbCSVLocation.Location = new System.Drawing.Point(7, 41);
+            this.tbCSVLocation.Location = new System.Drawing.Point(7, 62);
             this.tbCSVLocation.Name = "tbCSVLocation";
             this.tbCSVLocation.ReadOnly = true;
             this.tbCSVLocation.Size = new System.Drawing.Size(468, 20);
@@ -166,13 +178,6 @@
             this.butRun.UseVisualStyleBackColor = true;
             this.butRun.Click += new System.EventHandler(this.butRun_Click);
             // 
-            // pbMain
-            // 
-            this.pbMain.Location = new System.Drawing.Point(27, 133);
-            this.pbMain.Name = "pbMain";
-            this.pbMain.Size = new System.Drawing.Size(847, 23);
-            this.pbMain.TabIndex = 3;
-            // 
             // lvMainOutput
             // 
             this.lvMainOutput.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
@@ -180,10 +185,12 @@
             this.chGUID,
             this.chFileName,
             this.chDownloadLocation,
+            this.chRegardingEntity,
+            this.chRegardID,
             this.chErrorMessage});
-            this.lvMainOutput.Location = new System.Drawing.Point(27, 185);
+            this.lvMainOutput.Location = new System.Drawing.Point(27, 180);
             this.lvMainOutput.Name = "lvMainOutput";
-            this.lvMainOutput.Size = new System.Drawing.Size(847, 603);
+            this.lvMainOutput.Size = new System.Drawing.Size(1059, 600);
             this.lvMainOutput.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.lvMainOutput.TabIndex = 4;
             this.lvMainOutput.UseCompatibleStateImageBehavior = false;
@@ -192,49 +199,40 @@
             // chDateTime
             // 
             this.chDateTime.Text = "Date Time Processed";
-            this.chDateTime.Width = 152;
+            this.chDateTime.Width = 150;
             // 
             // chGUID
             // 
-            this.chGUID.Text = "GUID";
-            this.chGUID.Width = 152;
+            this.chGUID.Text = "Record GUID";
+            this.chGUID.Width = 150;
             // 
             // chFileName
             // 
             this.chFileName.Text = "File Name";
-            this.chFileName.Width = 152;
+            this.chFileName.Width = 150;
             // 
             // chDownloadLocation
             // 
             this.chDownloadLocation.Text = "Download Location";
-            this.chDownloadLocation.Width = 239;
+            this.chDownloadLocation.Width = 150;
             // 
             // chErrorMessage
             // 
             this.chErrorMessage.Text = "Error Message";
-            this.chErrorMessage.Width = 152;
+            this.chErrorMessage.Width = 150;
             // 
             // lbMainOutput
             // 
             this.lbMainOutput.AutoSize = true;
-            this.lbMainOutput.Location = new System.Drawing.Point(28, 169);
+            this.lbMainOutput.Location = new System.Drawing.Point(28, 164);
             this.lbMainOutput.Name = "lbMainOutput";
             this.lbMainOutput.Size = new System.Drawing.Size(65, 13);
             this.lbMainOutput.TabIndex = 5;
             this.lbMainOutput.Text = "Main Output";
             // 
-            // lbProgress
-            // 
-            this.lbProgress.AutoSize = true;
-            this.lbProgress.Location = new System.Drawing.Point(27, 114);
-            this.lbProgress.Name = "lbProgress";
-            this.lbProgress.Size = new System.Drawing.Size(48, 13);
-            this.lbProgress.TabIndex = 6;
-            this.lbProgress.Text = "Progress";
-            // 
             // butExport
             // 
-            this.butExport.Location = new System.Drawing.Point(330, 794);
+            this.butExport.Location = new System.Drawing.Point(378, 786);
             this.butExport.Name = "butExport";
             this.butExport.Size = new System.Drawing.Size(128, 23);
             this.butExport.TabIndex = 7;
@@ -248,20 +246,37 @@
             this.sfdCSVFile.Filter = "CSV Files | *.csv";
             this.sfdCSVFile.Title = "Export Results To CSV File";
             // 
+            // pbMain
+            // 
+            this.pbMain.Location = new System.Drawing.Point(31, 127);
+            this.pbMain.Name = "pbMain";
+            this.pbMain.Size = new System.Drawing.Size(847, 23);
+            this.pbMain.Step = 1;
+            this.pbMain.TabIndex = 8;
+            // 
+            // chRegardingEntity
+            // 
+            this.chRegardingEntity.Text = "Regrading Entity";
+            this.chRegardingEntity.Width = 150;
+            // 
+            // chRegardID
+            // 
+            this.chRegardID.Text = "Regarding ID";
+            this.chRegardID.Width = 150;
+            // 
             // PluginControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.pbMain);
             this.Controls.Add(this.butExport);
-            this.Controls.Add(this.lbProgress);
             this.Controls.Add(this.lbMainOutput);
             this.Controls.Add(this.lvMainOutput);
-            this.Controls.Add(this.pbMain);
             this.Controls.Add(this.gbStep3);
             this.Controls.Add(this.gbStep2);
             this.Controls.Add(this.gbStep1);
             this.Name = "PluginControl";
-            this.Size = new System.Drawing.Size(905, 826);
+            this.Size = new System.Drawing.Size(1099, 826);
             this.gbStep1.ResumeLayout(false);
             this.gbStep1.PerformLayout();
             this.gbStep2.ResumeLayout(false);
@@ -282,7 +297,6 @@
         private System.Windows.Forms.TextBox tbCSVLocation;
         private System.Windows.Forms.GroupBox gbStep3;
         private System.Windows.Forms.Button butRun;
-        private System.Windows.Forms.ProgressBar pbMain;
         private System.Windows.Forms.ListView lvMainOutput;
         private System.Windows.Forms.ColumnHeader chDateTime;
         private System.Windows.Forms.ColumnHeader chGUID;
@@ -290,12 +304,15 @@
         private System.Windows.Forms.ColumnHeader chDownloadLocation;
         private System.Windows.Forms.ColumnHeader chErrorMessage;
         private System.Windows.Forms.Label lbMainOutput;
-        private System.Windows.Forms.Label lbProgress;
         private System.Windows.Forms.Button butExport;
         private System.Windows.Forms.OpenFileDialog ofdCVSFile;
         private System.Windows.Forms.SaveFileDialog sfdCSVFile;
         private System.Windows.Forms.RadioButton rbSpecificAttachments;
         private System.Windows.Forms.RadioButton rbAllAttachments;
         private System.Windows.Forms.FolderBrowserDialog fbdMainFile;
+        private System.Windows.Forms.Label lbCSVLocation;
+        private System.Windows.Forms.ProgressBar pbMain;
+        private System.Windows.Forms.ColumnHeader chRegardingEntity;
+        private System.Windows.Forms.ColumnHeader chRegardID;
     }
 }

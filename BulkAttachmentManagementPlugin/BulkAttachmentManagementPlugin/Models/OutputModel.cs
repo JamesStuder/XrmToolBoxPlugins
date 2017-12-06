@@ -12,6 +12,8 @@ namespace BulkAttachmentManagementPlugin.Models
         public string GUID { get; set; }
         public string FileName { get; set; }
         public string DownloadLocation { get; set; }
+        public string RegardingEntity { get; set; }
+        public string RegardingID { get; set; }
         public string ErrorMessage { get; set; }
     }
 }

@@ -1,5 +1,7 @@
-﻿using Microsoft.Xrm.Sdk;
+﻿using BulkAttachmentManagementPlugin.Models;
+using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Client;
+using Microsoft.Xrm.Sdk.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +18,14 @@ namespace BulkAttachmentManagementPlugin.Data_Access_Objects
             OrganizationServiceContext xrmContext = new OrganizationServiceContext(service);
             oAttachmentGuids = xrmContext.CreateQuery("annotation").Where(n => n["filename"] != null).Select(n => Guid.Parse(n["annotationid"].ToString())).ToList();
             return oAttachmentGuids;
+        }
+
+        public Entity GetNoteAttachmentData(Guid noteID, IOrganizationService service)
+        {
+            ColumnSet cols = new ColumnSet(true);
+            Entity annotation = new Entity("annotation");
+            annotation = service.Retrieve(annotation.LogicalName, noteID, cols);
+            return annotation;
         }
     }
 }

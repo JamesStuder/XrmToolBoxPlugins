@@ -11,7 +11,7 @@ namespace BulkAttachmentManagementPlugin.Services
 {
     public class CSVExportService
     {
-        public void ExportToCSV(ListView mainListView, string filelocation, ProgressBar pBar)
+        public void ExportToCSV(ListView mainListView, string filelocation)
         {
             if(mainListView.Items.Count > 0 && mainListView != null)
             {
@@ -25,10 +25,12 @@ namespace BulkAttachmentManagementPlugin.Services
                         GUID = (item.SubItems[1].Text != null) ? item.SubItems[1].Text : string.Empty,
                         FileName = (item.SubItems[2].Text != null) ? item.SubItems[2].Text : string.Empty,
                         DownloadLocation = (item.SubItems[3].Text != null) ? item.SubItems[3].Text : string.Empty,
-                        ErrorMessage = (item.SubItems[4].Text != null) ? item.SubItems[4].Text : string.Empty
+                        RegardingID = (item.SubItems[4].Text != null) ? item.SubItems[4].Text : string.Empty,
+                        RegardingEntity = (item.SubItems[5].Text != null) ? item.SubItems[5].Text : string.Empty,
+                        ErrorMessage = (item.SubItems[6].Text != null) ? item.SubItems[6].Text : string.Empty
                     });
                 }
-                lfsDAO.ExportResultsToCSV(oOutputModel, filelocation, pBar);
+                lfsDAO.ExportResultsToCSV(oOutputModel, filelocation);
             }
         }
     }
