@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using XrmToolBox.Extensibility;
 using XrmToolBox.Extensibility.Interfaces;
-using BulkAttachmentManagementPlugin.Services;
+
 using System.IO;
 using BulkAttachmentManagementPlugin.Data_Access_Objects;
 using XrmToolBox.Extensibility.Args;
@@ -56,7 +56,7 @@ namespace BulkAttachmentManagementPlugin
                         if (fbdResult == DialogResult.OK)
                         {
                             tbCSVLocation.Text = fbdMainFile.SelectedPath;
-                            gbStep3.Enabled = true;
+                            gbStep4.Enabled = true;
                         }
                     }
                     else
@@ -65,7 +65,7 @@ namespace BulkAttachmentManagementPlugin
                         if (ofdResult == DialogResult.OK)
                         {
                             tbCSVLocation.Text = ofdCVSFile.FileName;
-                            gbStep3.Enabled = true;
+                            gbStep4.Enabled = true;
                         }
                     }
                 }
@@ -76,7 +76,7 @@ namespace BulkAttachmentManagementPlugin
                 if(fbdResult == DialogResult.OK)
                 {
                     tbCSVLocation.Text = fbdMainFile.SelectedPath;
-                    gbStep3.Enabled = true;
+                    gbStep4.Enabled = true;
                 }
             }
 
@@ -109,18 +109,13 @@ namespace BulkAttachmentManagementPlugin
                             ErrorMessage = (item.SubItems[6].Text != null) ? item.SubItems[6].Text : string.Empty
                         });
                     }
-                    lfsDAO.ExportResultsToCSV(oOutputModel, sfdCSVFile.FileName);
                 }
                 WorkAsync(new WorkAsyncInfo
                 {
+                    Message = "Exporting Data...",
                     Work = (Worker, args) =>
                     {
-                        //LocalFileSystemDAO lfsDAO = new LocalFileSystemDAO();
                         lfsDAO.ExportResultsToCSV(oOutputModel, sfdCSVFile.FileName);
-                        //LocalFileSystemDAO lfsDAO = new LocalFileSystemDAO();
-                        //CSVExportService export = new CSVExportService();
-                        //lfsDAO.CreateLocalFile(sfdCSVFile.FileName);
-                        //export.ExportToCSV(lvMainOutput, sfdCSVFile.FileName);
                     }
                 });
             }
@@ -133,7 +128,7 @@ namespace BulkAttachmentManagementPlugin
             if(rbAllAttachments.Checked)
             {
                 lbCSVLocation.Text = "Please choose a location to download attachments to.";
-                gbStep3.Enabled = false;
+                gbStep4.Enabled = false;
             }
         }
 
@@ -145,32 +140,32 @@ namespace BulkAttachmentManagementPlugin
                 tbCSVLocation.ReadOnly = false;
                 tbCSVLocation.Enabled = true;
                 butCSVBrowse.Enabled = true;
-                gbStep3.Enabled = false;
+                gbStep4.Enabled = false;
             }
         }
 
         private void rbDownload_CheckedChanged(object sender, EventArgs e)
         {
-            gbStep2.Enabled = true;
+            gbStep3.Enabled = true;
             if(rbDownload.Checked)
             {
-                gbStep2.Text = "Step 2: (What To Download.)";
+                gbStep3.Text = "Step 3: (What To Download.)";
                 rbAllAttachments.Enabled = true;
                 rbSpecificAttachments.Enabled = true;
                 tbCSVLocation.ReadOnly = false;
                 tbCSVLocation.Enabled = true;
                 butCSVBrowse.Enabled = true;
                 tbCSVLocation.Text = string.Empty;
-                gbStep3.Enabled = false;
+                gbStep4.Enabled = false;
             }
         }
 
         private void rbUpload_CheckedChanged(object sender, EventArgs e)
         {
-            gbStep2.Enabled = true;
+            gbStep3.Enabled = true;
             if (rbUpload.Checked)
             {
-                gbStep2.Text = "Step 2: (What To Upload - Choose root folder location.)";
+                gbStep3.Text = "Step 3: (What To Upload - Choose root folder location.)";
                 lbCSVLocation.Text = "";
                 rbAllAttachments.Enabled = false;
                 rbSpecificAttachments.Enabled = false;
@@ -180,21 +175,22 @@ namespace BulkAttachmentManagementPlugin
                 rbAllAttachments.Checked = false;
                 rbSpecificAttachments.Checked = false;
                 tbCSVLocation.Text = string.Empty;
-                gbStep3.Enabled = false;
+                gbStep4.Enabled = false;
             }
         }
         #endregion
 
+        int recordCount;
+        int loopCounter = 1;
         private void PerformAction()
         {
-            //CRMService crmService = new CRMService();
-            WorkAsync(new WorkAsyncInfo 
+            WorkAsync(new WorkAsyncInfo()
             {
+                Message = "Processing...",
                 Work = (Worker, args) =>
                 {
                     if(rbDownload.Checked)
                     {
-                        //crmService.DownloadRecords(lvMainOutput, Service, tbCSVLocation.Text, rbAllAttachments.Checked);
                         Entity oNoteData = new Entity();
                         string storeAttahmentDirectory = null;
                         try
@@ -203,9 +199,8 @@ namespace BulkAttachmentManagementPlugin
                             LocalFileSystemDAO localDAO = new LocalFileSystemDAO();
 
                             List<Guid> oAttachmentGuids = (rbAllAttachments.Checked) ? crmDAO.GetListOfAttachments(Service) : localDAO.ReadFromCSV(tbCSVLocation.Text);
-
+                            recordCount = oAttachmentGuids.Count();
                             string fileDirectory = (rbAllAttachments.Checked) ? localDAO.CreateLocalDirectory(tbCSVLocation.Text, false, false) : localDAO.CreateLocalDirectory(tbCSVLocation.Text, false, true);
-
                             foreach (Guid attachment in oAttachmentGuids)
                             {
                                 oNoteData = null;
@@ -223,21 +218,22 @@ namespace BulkAttachmentManagementPlugin
                                 _ListViewItem.SubItems.Add("");
 
                                 Worker.ReportProgress(0, _ListViewItem);
+                                Worker.ReportProgress(1);
+                                loopCounter++;
                             }
                         }
                         catch (Exception ex)
                         {
                             ListViewItem _ListViewItem = new ListViewItem(DateTime.Now.ToString());
-                            _ListViewItem.SubItems.Add((oNoteData != null) ? oNoteData["annotationid"].ToString() : null);
-                            _ListViewItem.SubItems.Add((oNoteData != null) ? oNoteData["filename"].ToString() : null);
+                            _ListViewItem.SubItems.Add(oNoteData?["annotationid"].ToString());
+                            _ListViewItem.SubItems.Add(oNoteData?["filename"].ToString());
                             _ListViewItem.SubItems.Add(storeAttahmentDirectory);
-                            _ListViewItem.SubItems.Add((oNoteData != null) ? oNoteData["objecttypecode"].ToString() : null);
+                            _ListViewItem.SubItems.Add(oNoteData?["objecttypecode"].ToString());
                             _ListViewItem.SubItems.Add((oNoteData != null) ? ((EntityReference)oNoteData["objectid"]).Id.ToString() : null);
                             _ListViewItem.SubItems.Add(ex.Message);
 
                             Worker.ReportProgress(0, _ListViewItem);
                         }
-
                     }
                     if(rbUpload.Checked)
                     {
@@ -246,7 +242,14 @@ namespace BulkAttachmentManagementPlugin
                 },
                 ProgressChanged = pc =>
                 {
-                    lvMainOutput.Items.Add((ListViewItem)pc.UserState);
+                    if(pc.ProgressPercentage == 1)
+                    {
+                        SetWorkingMessage(string.Format("Processing {0} of {1}", loopCounter, recordCount));
+                    }
+                    else
+                    {
+                        lvMainOutput.Items.Add((ListViewItem)pc.UserState);
+                    }
                 }
             });
         }
