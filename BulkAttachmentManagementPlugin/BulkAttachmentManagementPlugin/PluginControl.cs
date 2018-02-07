@@ -1,18 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using XrmToolBox.Extensibility;
 using XrmToolBox.Extensibility.Interfaces;
-
 using System.IO;
 using BulkAttachmentManagementPlugin.Data_Access_Objects;
-using XrmToolBox.Extensibility.Args;
 using Microsoft.Xrm.Sdk;
 using BulkAttachmentManagementPlugin.Models;
 
@@ -56,7 +49,7 @@ namespace BulkAttachmentManagementPlugin
                         if (fbdResult == DialogResult.OK)
                         {
                             tbCSVLocation.Text = fbdMainFile.SelectedPath;
-                            gbStep4.Enabled = true;
+                            gbStep3.Enabled = true;
                         }
                     }
                     else
@@ -65,7 +58,7 @@ namespace BulkAttachmentManagementPlugin
                         if (ofdResult == DialogResult.OK)
                         {
                             tbCSVLocation.Text = ofdCVSFile.FileName;
-                            gbStep4.Enabled = true;
+                            gbStep3.Enabled = true;
                         }
                     }
                 }
@@ -76,7 +69,7 @@ namespace BulkAttachmentManagementPlugin
                 if(fbdResult == DialogResult.OK)
                 {
                     tbCSVLocation.Text = fbdMainFile.SelectedPath;
-                    gbStep4.Enabled = true;
+                    gbStep3.Enabled = true;
                 }
             }
 
@@ -127,8 +120,8 @@ namespace BulkAttachmentManagementPlugin
         {
             if(rbAllAttachments.Checked)
             {
-                lbCSVLocation.Text = "Please choose a location to download attachments to.";
-                gbStep4.Enabled = false;
+                lbCSVLocation.Text = "Please choose the location to download attachments to.";
+                gbStep3.Enabled = false;
             }
         }
 
@@ -136,113 +129,167 @@ namespace BulkAttachmentManagementPlugin
         {
             if (rbSpecificAttachments.Checked)
             {
-                lbCSVLocation.Text = "Folder containing attachments will be downloaded to same folder as CSV file.";
+                lbCSVLocation.Text = "Please choose a location of CSV file.  Folder containing attachments will be downloaded to same folder as CSV file.";
                 tbCSVLocation.ReadOnly = false;
                 tbCSVLocation.Enabled = true;
                 butCSVBrowse.Enabled = true;
-                gbStep4.Enabled = false;
+                gbStep3.Enabled = false;
             }
         }
 
-        private void rbDownload_CheckedChanged(object sender, EventArgs e)
+        private void Step1RadioButtons(object sender, EventArgs e)
         {
-            gbStep3.Enabled = true;
-            if(rbDownload.Checked)
-            {
-                gbStep3.Text = "Step 3: (What To Download.)";
-                rbAllAttachments.Enabled = true;
-                rbSpecificAttachments.Enabled = true;
-                tbCSVLocation.ReadOnly = false;
-                tbCSVLocation.Enabled = true;
-                butCSVBrowse.Enabled = true;
-                tbCSVLocation.Text = string.Empty;
-                gbStep4.Enabled = false;
-            }
+            gbStep2.Enabled = true;
         }
 
-        private void rbUpload_CheckedChanged(object sender, EventArgs e)
-        {
-            gbStep3.Enabled = true;
-            if (rbUpload.Checked)
-            {
-                gbStep3.Text = "Step 3: (What To Upload - Choose root folder location.)";
-                lbCSVLocation.Text = "";
-                rbAllAttachments.Enabled = false;
-                rbSpecificAttachments.Enabled = false;
-                tbCSVLocation.ReadOnly = false;
-                tbCSVLocation.Enabled = true;
-                butCSVBrowse.Enabled = true;
-                rbAllAttachments.Checked = false;
-                rbSpecificAttachments.Checked = false;
-                tbCSVLocation.Text = string.Empty;
-                gbStep4.Enabled = false;
-            }
-        }
         #endregion
 
         int recordCount;
         int loopCounter = 1;
+
         private void PerformAction()
+        {
+            #region Download Notes
+            if(rbNotes.Checked)
+            {
+                ProcessNotes();
+            }
+            #endregion
+
+            #region Download Emails
+            if (rbEMail.Checked)
+            {
+                ProcessEmails();
+            }
+            #endregion
+
+            #region Download Both
+            if (rbBoth.Checked)
+            {
+                ProcessNotes();
+                ProcessEmails();
+            }
+            #endregion
+        }
+        private void ProcessNotes()
         {
             WorkAsync(new WorkAsyncInfo()
             {
                 Message = "Processing...",
                 Work = (Worker, args) =>
                 {
-                    if(rbDownload.Checked)
+                    Entity oNoteData = new Entity();
+                    string storeAttahmentDirectory = null;
+                    try
                     {
-                        Entity oNoteData = new Entity();
-                        string storeAttahmentDirectory = null;
-                        try
+                        CRMAttachmentDAO crmDAO = new CRMAttachmentDAO();
+                        LocalFileSystemDAO localDAO = new LocalFileSystemDAO();
+
+                        List<Guid> oAttachmentGuids = (rbAllAttachments.Checked) ? crmDAO.GetListOfAttachments(Service) : localDAO.ReadFromCSV(tbCSVLocation.Text);
+                        recordCount = oAttachmentGuids.Count();
+                        string fileDirectory = (rbAllAttachments.Checked) ? localDAO.CreateLocalDirectory(tbCSVLocation.Text, false, false, false) : localDAO.CreateLocalDirectory(tbCSVLocation.Text, false, true, false);
+                        foreach (Guid attachment in oAttachmentGuids)
                         {
-                            CRMAttachmentDAO crmDAO = new CRMAttachmentDAO();
-                            LocalFileSystemDAO localDAO = new LocalFileSystemDAO();
+                            oNoteData = null;
+                            storeAttahmentDirectory = null;
+                            oNoteData = crmDAO.GetNoteAttachmentData(attachment, Service);
+                            storeAttahmentDirectory = localDAO.CreateLocalDirectory(Path.Combine(fileDirectory, oNoteData.Id.ToString()), true, false, false);
+                            localDAO.CreateAttachmentFile(oNoteData["documentbody"].ToString(), storeAttahmentDirectory, oNoteData["filename"].ToString());
 
-                            List<Guid> oAttachmentGuids = (rbAllAttachments.Checked) ? crmDAO.GetListOfAttachments(Service) : localDAO.ReadFromCSV(tbCSVLocation.Text);
-                            recordCount = oAttachmentGuids.Count();
-                            string fileDirectory = (rbAllAttachments.Checked) ? localDAO.CreateLocalDirectory(tbCSVLocation.Text, false, false) : localDAO.CreateLocalDirectory(tbCSVLocation.Text, false, true);
-                            foreach (Guid attachment in oAttachmentGuids)
-                            {
-                                oNoteData = null;
-                                storeAttahmentDirectory = null;
-                                oNoteData = crmDAO.GetNoteAttachmentData(attachment, Service);
-                                storeAttahmentDirectory = localDAO.CreateLocalDirectory(Path.Combine(fileDirectory, oNoteData.Id.ToString()), true, false);
-                                localDAO.CreateAttachmentFile(oNoteData["documentbody"].ToString(), storeAttahmentDirectory, oNoteData["filename"].ToString());
-
-                                ListViewItem _ListViewItem = new ListViewItem(DateTime.Now.ToString());
-                                _ListViewItem.SubItems.Add(oNoteData["annotationid"].ToString());
-                                _ListViewItem.SubItems.Add(oNoteData["filename"].ToString());
-                                _ListViewItem.SubItems.Add(storeAttahmentDirectory);
-                                _ListViewItem.SubItems.Add(oNoteData["objecttypecode"].ToString());
-                                _ListViewItem.SubItems.Add(((EntityReference)oNoteData["objectid"]).Id.ToString());
-                                _ListViewItem.SubItems.Add("");
-
-                                Worker.ReportProgress(0, _ListViewItem);
-                                Worker.ReportProgress(1);
-                                loopCounter++;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
                             ListViewItem _ListViewItem = new ListViewItem(DateTime.Now.ToString());
-                            _ListViewItem.SubItems.Add(oNoteData?["annotationid"].ToString());
-                            _ListViewItem.SubItems.Add(oNoteData?["filename"].ToString());
+                            _ListViewItem.SubItems.Add(oNoteData["annotationid"].ToString());
+                            _ListViewItem.SubItems.Add(oNoteData["filename"].ToString());
                             _ListViewItem.SubItems.Add(storeAttahmentDirectory);
-                            _ListViewItem.SubItems.Add(oNoteData?["objecttypecode"].ToString());
-                            _ListViewItem.SubItems.Add((oNoteData != null) ? ((EntityReference)oNoteData["objectid"]).Id.ToString() : null);
-                            _ListViewItem.SubItems.Add(ex.Message);
+                            _ListViewItem.SubItems.Add(oNoteData["objecttypecode"].ToString());
+                            _ListViewItem.SubItems.Add(((EntityReference)oNoteData["objectid"]).Id.ToString());
+                            _ListViewItem.SubItems.Add("");
 
                             Worker.ReportProgress(0, _ListViewItem);
+                            Worker.ReportProgress(1);
+                            loopCounter++;
                         }
                     }
-                    if(rbUpload.Checked)
+                    catch (Exception ex)
                     {
+                        ListViewItem _ListViewItem = new ListViewItem(DateTime.Now.ToString());
+                        _ListViewItem.SubItems.Add(oNoteData?["annotationid"].ToString());
+                        _ListViewItem.SubItems.Add(oNoteData?["filename"].ToString());
+                        _ListViewItem.SubItems.Add(storeAttahmentDirectory);
+                        _ListViewItem.SubItems.Add(oNoteData?["objecttypecode"].ToString());
+                        _ListViewItem.SubItems.Add((oNoteData != null) ? ((EntityReference)oNoteData["objectid"]).Id.ToString() : null);
+                        _ListViewItem.SubItems.Add(ex.Message);
 
+                        Worker.ReportProgress(0, _ListViewItem);
                     }
                 },
                 ProgressChanged = pc =>
                 {
-                    if(pc.ProgressPercentage == 1)
+                    if (pc.ProgressPercentage == 1)
+                    {
+                        SetWorkingMessage(string.Format("Processing {0} of {1}", loopCounter, recordCount));
+                    }
+                    else
+                    {
+                        lvMainOutput.Items.Add((ListViewItem)pc.UserState);
+                    }
+                }
+            });
+        }
+
+        private void ProcessEmails()
+        {
+            WorkAsync(new WorkAsyncInfo()
+            {
+                Message = "Processing...",
+                Work = (Worker, args) =>
+                {
+                    Entity oEMailData = new Entity();
+                    string storeAttahmentDirectory = null;
+                    try
+                    {
+                        CRMAttachmentDAO crmDAO = new CRMAttachmentDAO();
+                        LocalFileSystemDAO localDAO = new LocalFileSystemDAO();
+
+                        List<Guid> oAttachmentGuids = (rbAllAttachments.Checked) ? crmDAO.GetListOfAttachments(Service) : localDAO.ReadFromCSV(tbCSVLocation.Text);
+                        recordCount = oAttachmentGuids.Count();
+                        string fileDirectory = (rbAllAttachments.Checked) ? localDAO.CreateLocalDirectory(tbCSVLocation.Text, false, false, true) : localDAO.CreateLocalDirectory(tbCSVLocation.Text, false, true, true);
+                        foreach (Guid attachment in oAttachmentGuids)
+                        {
+                            oEMailData = null;
+                            storeAttahmentDirectory = null;
+                            oEMailData = crmDAO.GetNoteAttachmentData(attachment, Service);
+                            storeAttahmentDirectory = localDAO.CreateLocalDirectory(Path.Combine(fileDirectory, oEMailData.Id.ToString()), true, false, true);
+                            localDAO.CreateAttachmentFile(oEMailData["body"].ToString(), storeAttahmentDirectory, oEMailData["filename"].ToString());
+
+                            ListViewItem _ListViewItem = new ListViewItem(DateTime.Now.ToString());
+                            _ListViewItem.SubItems.Add(oEMailData["activitymimeattachmentid"].ToString());
+                            _ListViewItem.SubItems.Add(oEMailData["filename"].ToString());
+                            _ListViewItem.SubItems.Add(storeAttahmentDirectory);
+                            _ListViewItem.SubItems.Add(oEMailData["objecttypecode"].ToString());
+                            _ListViewItem.SubItems.Add(((EntityReference)oEMailData["objectid"]).Id.ToString());
+                            _ListViewItem.SubItems.Add("");
+
+                            Worker.ReportProgress(0, _ListViewItem);
+                            Worker.ReportProgress(1);
+                            loopCounter++;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ListViewItem _ListViewItem = new ListViewItem(DateTime.Now.ToString());
+                        _ListViewItem.SubItems.Add(oEMailData?["activitymimeattachmentid"].ToString());
+                        _ListViewItem.SubItems.Add(oEMailData?["filename"].ToString());
+                        _ListViewItem.SubItems.Add(storeAttahmentDirectory);
+                        _ListViewItem.SubItems.Add(oEMailData?["objecttypecode"].ToString());
+                        _ListViewItem.SubItems.Add((oEMailData != null) ? ((EntityReference)oEMailData["objectid"]).Id.ToString() : null);
+                        _ListViewItem.SubItems.Add(ex.Message);
+
+                        Worker.ReportProgress(0, _ListViewItem);
+                    }
+                },
+                ProgressChanged = pc =>
+                {
+                    if (pc.ProgressPercentage == 1)
                     {
                         SetWorkingMessage(string.Format("Processing {0} of {1}", loopCounter, recordCount));
                     }

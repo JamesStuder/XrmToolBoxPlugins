@@ -28,16 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.gbStep1 = new System.Windows.Forms.GroupBox();
-            this.rbUpload = new System.Windows.Forms.RadioButton();
-            this.rbDownload = new System.Windows.Forms.RadioButton();
-            this.gbStep3 = new System.Windows.Forms.GroupBox();
+            this.gbStep2 = new System.Windows.Forms.GroupBox();
             this.lbCSVLocation = new System.Windows.Forms.Label();
             this.rbSpecificAttachments = new System.Windows.Forms.RadioButton();
             this.rbAllAttachments = new System.Windows.Forms.RadioButton();
             this.butCSVBrowse = new System.Windows.Forms.Button();
             this.tbCSVLocation = new System.Windows.Forms.TextBox();
-            this.gbStep4 = new System.Windows.Forms.GroupBox();
+            this.gbStep3 = new System.Windows.Forms.GroupBox();
             this.butRun = new System.Windows.Forms.Button();
             this.lvMainOutput = new System.Windows.Forms.ListView();
             this.chDateTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -52,64 +49,29 @@
             this.ofdCVSFile = new System.Windows.Forms.OpenFileDialog();
             this.sfdCSVFile = new System.Windows.Forms.SaveFileDialog();
             this.fbdMainFile = new System.Windows.Forms.FolderBrowserDialog();
-            this.gbStep2 = new System.Windows.Forms.GroupBox();
-            this.rbEMail = new System.Windows.Forms.RadioButton();
-            this.Notes = new System.Windows.Forms.RadioButton();
+            this.gbStep1 = new System.Windows.Forms.GroupBox();
             this.rbBoth = new System.Windows.Forms.RadioButton();
-            this.gbStep1.SuspendLayout();
-            this.gbStep3.SuspendLayout();
-            this.gbStep4.SuspendLayout();
+            this.rbNotes = new System.Windows.Forms.RadioButton();
+            this.rbEMail = new System.Windows.Forms.RadioButton();
             this.gbStep2.SuspendLayout();
+            this.gbStep3.SuspendLayout();
+            this.gbStep1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // gbStep1
+            // gbStep2
             // 
-            this.gbStep1.Controls.Add(this.rbUpload);
-            this.gbStep1.Controls.Add(this.rbDownload);
-            this.gbStep1.Location = new System.Drawing.Point(27, 23);
-            this.gbStep1.Name = "gbStep1";
-            this.gbStep1.Size = new System.Drawing.Size(130, 88);
-            this.gbStep1.TabIndex = 0;
-            this.gbStep1.TabStop = false;
-            this.gbStep1.Text = "Step 1: (Choose One)";
-            // 
-            // rbUpload
-            // 
-            this.rbUpload.AutoSize = true;
-            this.rbUpload.Enabled = false;
-            this.rbUpload.Location = new System.Drawing.Point(7, 44);
-            this.rbUpload.Name = "rbUpload";
-            this.rbUpload.Size = new System.Drawing.Size(59, 17);
-            this.rbUpload.TabIndex = 1;
-            this.rbUpload.Text = "Upload";
-            this.rbUpload.UseVisualStyleBackColor = true;
-            this.rbUpload.CheckedChanged += new System.EventHandler(this.rbUpload_CheckedChanged);
-            // 
-            // rbDownload
-            // 
-            this.rbDownload.AutoSize = true;
-            this.rbDownload.Location = new System.Drawing.Point(7, 20);
-            this.rbDownload.Name = "rbDownload";
-            this.rbDownload.Size = new System.Drawing.Size(73, 17);
-            this.rbDownload.TabIndex = 0;
-            this.rbDownload.Text = "Download";
-            this.rbDownload.UseVisualStyleBackColor = true;
-            this.rbDownload.CheckedChanged += new System.EventHandler(this.rbDownload_CheckedChanged);
-            // 
-            // gbStep3
-            // 
-            this.gbStep3.Controls.Add(this.lbCSVLocation);
-            this.gbStep3.Controls.Add(this.rbSpecificAttachments);
-            this.gbStep3.Controls.Add(this.rbAllAttachments);
-            this.gbStep3.Controls.Add(this.butCSVBrowse);
-            this.gbStep3.Controls.Add(this.tbCSVLocation);
-            this.gbStep3.Enabled = false;
-            this.gbStep3.Location = new System.Drawing.Point(355, 23);
-            this.gbStep3.Name = "gbStep3";
-            this.gbStep3.Size = new System.Drawing.Size(562, 88);
-            this.gbStep3.TabIndex = 1;
-            this.gbStep3.TabStop = false;
-            this.gbStep3.Text = "Step 3:";
+            this.gbStep2.Controls.Add(this.lbCSVLocation);
+            this.gbStep2.Controls.Add(this.rbSpecificAttachments);
+            this.gbStep2.Controls.Add(this.rbAllAttachments);
+            this.gbStep2.Controls.Add(this.butCSVBrowse);
+            this.gbStep2.Controls.Add(this.tbCSVLocation);
+            this.gbStep2.Enabled = false;
+            this.gbStep2.Location = new System.Drawing.Point(209, 23);
+            this.gbStep2.Name = "gbStep2";
+            this.gbStep2.Size = new System.Drawing.Size(725, 88);
+            this.gbStep2.TabIndex = 1;
+            this.gbStep2.TabStop = false;
+            this.gbStep2.Text = "Step 2: (What To Download.)";
             // 
             // lbCSVLocation
             // 
@@ -144,7 +106,7 @@
             // butCSVBrowse
             // 
             this.butCSVBrowse.Enabled = false;
-            this.butCSVBrowse.Location = new System.Drawing.Point(481, 62);
+            this.butCSVBrowse.Location = new System.Drawing.Point(644, 61);
             this.butCSVBrowse.Name = "butCSVBrowse";
             this.butCSVBrowse.Size = new System.Drawing.Size(75, 20);
             this.butCSVBrowse.TabIndex = 1;
@@ -158,19 +120,19 @@
             this.tbCSVLocation.Location = new System.Drawing.Point(7, 62);
             this.tbCSVLocation.Name = "tbCSVLocation";
             this.tbCSVLocation.ReadOnly = true;
-            this.tbCSVLocation.Size = new System.Drawing.Size(468, 20);
+            this.tbCSVLocation.Size = new System.Drawing.Size(631, 20);
             this.tbCSVLocation.TabIndex = 0;
             // 
-            // gbStep4
+            // gbStep3
             // 
-            this.gbStep4.Controls.Add(this.butRun);
-            this.gbStep4.Enabled = false;
-            this.gbStep4.Location = new System.Drawing.Point(940, 23);
-            this.gbStep4.Name = "gbStep4";
-            this.gbStep4.Size = new System.Drawing.Size(132, 88);
-            this.gbStep4.TabIndex = 2;
-            this.gbStep4.TabStop = false;
-            this.gbStep4.Text = "Step 4: (Run)";
+            this.gbStep3.Controls.Add(this.butRun);
+            this.gbStep3.Enabled = false;
+            this.gbStep3.Location = new System.Drawing.Point(940, 23);
+            this.gbStep3.Name = "gbStep3";
+            this.gbStep3.Size = new System.Drawing.Size(132, 88);
+            this.gbStep3.TabIndex = 2;
+            this.gbStep3.TabStop = false;
+            this.gbStep3.Text = "Step 3: (Run)";
             // 
             // butRun
             // 
@@ -260,41 +222,17 @@
             this.sfdCSVFile.Filter = "CSV Files | *.csv";
             this.sfdCSVFile.Title = "Export Results To CSV File";
             // 
-            // gbStep2
+            // gbStep1
             // 
-            this.gbStep2.Controls.Add(this.rbBoth);
-            this.gbStep2.Controls.Add(this.Notes);
-            this.gbStep2.Controls.Add(this.rbEMail);
-            this.gbStep2.Enabled = false;
-            this.gbStep2.Location = new System.Drawing.Point(174, 23);
-            this.gbStep2.Name = "gbStep2";
-            this.gbStep2.Size = new System.Drawing.Size(162, 88);
-            this.gbStep2.TabIndex = 8;
-            this.gbStep2.TabStop = false;
-            this.gbStep2.Text = "Step 2: (Choose One)";
-            // 
-            // rbEMail
-            // 
-            this.rbEMail.AutoSize = true;
-            this.rbEMail.Enabled = false;
-            this.rbEMail.Location = new System.Drawing.Point(5, 44);
-            this.rbEMail.Name = "rbEMail";
-            this.rbEMail.Size = new System.Drawing.Size(54, 17);
-            this.rbEMail.TabIndex = 0;
-            this.rbEMail.TabStop = true;
-            this.rbEMail.Text = "E-Mail";
-            this.rbEMail.UseVisualStyleBackColor = true;
-            // 
-            // Notes
-            // 
-            this.Notes.AutoSize = true;
-            this.Notes.Location = new System.Drawing.Point(6, 21);
-            this.Notes.Name = "Notes";
-            this.Notes.Size = new System.Drawing.Size(53, 17);
-            this.Notes.TabIndex = 1;
-            this.Notes.TabStop = true;
-            this.Notes.Text = "Notes";
-            this.Notes.UseVisualStyleBackColor = true;
+            this.gbStep1.Controls.Add(this.rbBoth);
+            this.gbStep1.Controls.Add(this.rbNotes);
+            this.gbStep1.Controls.Add(this.rbEMail);
+            this.gbStep1.Location = new System.Drawing.Point(27, 23);
+            this.gbStep1.Name = "gbStep1";
+            this.gbStep1.Size = new System.Drawing.Size(162, 88);
+            this.gbStep1.TabIndex = 8;
+            this.gbStep1.TabStop = false;
+            this.gbStep1.Text = "Step 1: (Choose One)";
             // 
             // rbBoth
             // 
@@ -306,41 +244,59 @@
             this.rbBoth.TabStop = true;
             this.rbBoth.Text = "Both";
             this.rbBoth.UseVisualStyleBackColor = true;
+            this.rbBoth.CheckedChanged += new System.EventHandler(this.Step1RadioButtons);
+            // 
+            // rbNotes
+            // 
+            this.rbNotes.AutoSize = true;
+            this.rbNotes.Location = new System.Drawing.Point(6, 21);
+            this.rbNotes.Name = "rbNotes";
+            this.rbNotes.Size = new System.Drawing.Size(53, 17);
+            this.rbNotes.TabIndex = 1;
+            this.rbNotes.TabStop = true;
+            this.rbNotes.Text = "Notes";
+            this.rbNotes.UseVisualStyleBackColor = true;
+            this.rbNotes.CheckedChanged += new System.EventHandler(this.Step1RadioButtons);
+            // 
+            // rbEMail
+            // 
+            this.rbEMail.AutoSize = true;
+            this.rbEMail.Location = new System.Drawing.Point(5, 44);
+            this.rbEMail.Name = "rbEMail";
+            this.rbEMail.Size = new System.Drawing.Size(54, 17);
+            this.rbEMail.TabIndex = 0;
+            this.rbEMail.TabStop = true;
+            this.rbEMail.Text = "E-Mail";
+            this.rbEMail.UseVisualStyleBackColor = true;
+            this.rbEMail.CheckedChanged += new System.EventHandler(this.Step1RadioButtons);
             // 
             // PluginControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.gbStep2);
+            this.Controls.Add(this.gbStep1);
             this.Controls.Add(this.butExport);
             this.Controls.Add(this.lbMainOutput);
             this.Controls.Add(this.lvMainOutput);
-            this.Controls.Add(this.gbStep4);
             this.Controls.Add(this.gbStep3);
-            this.Controls.Add(this.gbStep1);
+            this.Controls.Add(this.gbStep2);
             this.Name = "PluginControl";
             this.Size = new System.Drawing.Size(1099, 826);
-            this.gbStep1.ResumeLayout(false);
-            this.gbStep1.PerformLayout();
-            this.gbStep3.ResumeLayout(false);
-            this.gbStep3.PerformLayout();
-            this.gbStep4.ResumeLayout(false);
             this.gbStep2.ResumeLayout(false);
             this.gbStep2.PerformLayout();
+            this.gbStep3.ResumeLayout(false);
+            this.gbStep1.ResumeLayout(false);
+            this.gbStep1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.GroupBox gbStep1;
-        private System.Windows.Forms.RadioButton rbUpload;
-        private System.Windows.Forms.RadioButton rbDownload;
-        private System.Windows.Forms.GroupBox gbStep3;
+        private System.Windows.Forms.GroupBox gbStep2;
         private System.Windows.Forms.Button butCSVBrowse;
         private System.Windows.Forms.TextBox tbCSVLocation;
-        private System.Windows.Forms.GroupBox gbStep4;
+        private System.Windows.Forms.GroupBox gbStep3;
         private System.Windows.Forms.Button butRun;
         private System.Windows.Forms.ListView lvMainOutput;
         private System.Windows.Forms.ColumnHeader chDateTime;
@@ -358,8 +314,8 @@
         private System.Windows.Forms.Label lbCSVLocation;
         private System.Windows.Forms.ColumnHeader chRegardingEntity;
         private System.Windows.Forms.ColumnHeader chRegardID;
-        private System.Windows.Forms.GroupBox gbStep2;
-        private System.Windows.Forms.RadioButton Notes;
+        private System.Windows.Forms.GroupBox gbStep1;
+        private System.Windows.Forms.RadioButton rbNotes;
         private System.Windows.Forms.RadioButton rbEMail;
         private System.Windows.Forms.RadioButton rbBoth;
     }

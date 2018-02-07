@@ -2,10 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace BulkAttachmentManagementPlugin.Data_Access_Objects
 {
@@ -43,13 +39,20 @@ namespace BulkAttachmentManagementPlugin.Data_Access_Objects
             st.Close();
         }
 
-        public string CreateLocalDirectory(string fileLocation, bool isNewAttachment, bool isCSVLocation)
+        public string CreateLocalDirectory(string fileLocation, bool isNewAttachment, bool isCSVLocation, bool isMimeAttachment)
         {
             string filepath = (isCSVLocation) ? Path.GetDirectoryName(fileLocation) : fileLocation;
             
             if(!isNewAttachment)
             {
-                filepath = Path.Combine(filepath, "Note Attachments");
+                if(isMimeAttachment)
+                {
+                    filepath = Path.Combine(filepath, "E-Mail Attachments");
+                }
+                else
+                {
+                    filepath = Path.Combine(filepath, "Note Attachments");
+                }
             }
 
             if (!Directory.Exists(filepath))
