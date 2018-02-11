@@ -45,7 +45,6 @@
             this.chRegardID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.chErrorMessage = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.lbMainOutput = new System.Windows.Forms.Label();
-            this.butExport = new System.Windows.Forms.Button();
             this.ofdCVSFile = new System.Windows.Forms.OpenFileDialog();
             this.sfdCSVFile = new System.Windows.Forms.SaveFileDialog();
             this.fbdMainFile = new System.Windows.Forms.FolderBrowserDialog();
@@ -53,9 +52,12 @@
             this.rbBoth = new System.Windows.Forms.RadioButton();
             this.rbNotes = new System.Windows.Forms.RadioButton();
             this.rbEMail = new System.Windows.Forms.RadioButton();
+            this.gbStep4 = new System.Windows.Forms.GroupBox();
+            this.butExport = new System.Windows.Forms.Button();
             this.gbStep2.SuspendLayout();
             this.gbStep3.SuspendLayout();
             this.gbStep1.SuspendLayout();
+            this.gbStep4.SuspendLayout();
             this.SuspendLayout();
             // 
             // gbStep2
@@ -146,6 +148,9 @@
             // 
             // lvMainOutput
             // 
+            this.lvMainOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lvMainOutput.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.chDateTime,
             this.chGUID,
@@ -156,7 +161,7 @@
             this.chErrorMessage});
             this.lvMainOutput.Location = new System.Drawing.Point(27, 139);
             this.lvMainOutput.Name = "lvMainOutput";
-            this.lvMainOutput.Size = new System.Drawing.Size(1059, 641);
+            this.lvMainOutput.Size = new System.Drawing.Size(1253, 641);
             this.lvMainOutput.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.lvMainOutput.TabIndex = 4;
             this.lvMainOutput.UseCompatibleStateImageBehavior = false;
@@ -205,16 +210,6 @@
             this.lbMainOutput.Size = new System.Drawing.Size(65, 13);
             this.lbMainOutput.TabIndex = 5;
             this.lbMainOutput.Text = "Main Output";
-            // 
-            // butExport
-            // 
-            this.butExport.Location = new System.Drawing.Point(378, 786);
-            this.butExport.Name = "butExport";
-            this.butExport.Size = new System.Drawing.Size(128, 23);
-            this.butExport.TabIndex = 7;
-            this.butExport.Text = "Export Results";
-            this.butExport.UseVisualStyleBackColor = true;
-            this.butExport.Click += new System.EventHandler(this.butExport_Click);
             // 
             // sfdCSVFile
             // 
@@ -270,23 +265,43 @@
             this.rbEMail.UseVisualStyleBackColor = true;
             this.rbEMail.CheckedChanged += new System.EventHandler(this.Step1RadioButtons);
             // 
+            // gbStep4
+            // 
+            this.gbStep4.Controls.Add(this.butExport);
+            this.gbStep4.Location = new System.Drawing.Point(1078, 23);
+            this.gbStep4.Name = "gbStep4";
+            this.gbStep4.Size = new System.Drawing.Size(200, 88);
+            this.gbStep4.TabIndex = 9;
+            this.gbStep4.TabStop = false;
+            this.gbStep4.Text = "Step 4: (Export Results)";
+            // 
+            // butExport
+            // 
+            this.butExport.Location = new System.Drawing.Point(36, 39);
+            this.butExport.Name = "butExport";
+            this.butExport.Size = new System.Drawing.Size(128, 23);
+            this.butExport.TabIndex = 8;
+            this.butExport.Text = "Export Results";
+            this.butExport.UseVisualStyleBackColor = true;
+            // 
             // PluginControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.gbStep4);
             this.Controls.Add(this.gbStep1);
-            this.Controls.Add(this.butExport);
             this.Controls.Add(this.lbMainOutput);
             this.Controls.Add(this.lvMainOutput);
             this.Controls.Add(this.gbStep3);
             this.Controls.Add(this.gbStep2);
             this.Name = "PluginControl";
-            this.Size = new System.Drawing.Size(1099, 826);
+            this.Size = new System.Drawing.Size(1293, 826);
             this.gbStep2.ResumeLayout(false);
             this.gbStep2.PerformLayout();
             this.gbStep3.ResumeLayout(false);
             this.gbStep1.ResumeLayout(false);
             this.gbStep1.PerformLayout();
+            this.gbStep4.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -305,7 +320,6 @@
         private System.Windows.Forms.ColumnHeader chDownloadLocation;
         private System.Windows.Forms.ColumnHeader chErrorMessage;
         private System.Windows.Forms.Label lbMainOutput;
-        private System.Windows.Forms.Button butExport;
         private System.Windows.Forms.OpenFileDialog ofdCVSFile;
         private System.Windows.Forms.SaveFileDialog sfdCSVFile;
         private System.Windows.Forms.RadioButton rbSpecificAttachments;
@@ -318,5 +332,7 @@
         private System.Windows.Forms.RadioButton rbNotes;
         private System.Windows.Forms.RadioButton rbEMail;
         private System.Windows.Forms.RadioButton rbBoth;
+        private System.Windows.Forms.GroupBox gbStep4;
+        private System.Windows.Forms.Button butExport;
     }
 }

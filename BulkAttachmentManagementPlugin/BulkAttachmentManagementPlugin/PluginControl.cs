@@ -121,6 +121,9 @@ namespace BulkAttachmentManagementPlugin
             if(rbAllAttachments.Checked)
             {
                 lbCSVLocation.Text = "Please choose the location to download attachments to.";
+                tbCSVLocation.ReadOnly = false;
+                tbCSVLocation.Enabled = true;
+                butCSVBrowse.Enabled = true;
                 gbStep3.Enabled = false;
             }
         }
@@ -250,14 +253,14 @@ namespace BulkAttachmentManagementPlugin
                         CRMAttachmentDAO crmDAO = new CRMAttachmentDAO();
                         LocalFileSystemDAO localDAO = new LocalFileSystemDAO();
 
-                        List<Guid> oAttachmentGuids = (rbAllAttachments.Checked) ? crmDAO.GetListOfAttachments(Service) : localDAO.ReadFromCSV(tbCSVLocation.Text);
+                        List<Guid> oAttachmentGuids = (rbAllAttachments.Checked) ? crmDAO.GetListOfActivityMimeAttachmentGuids(Service) : localDAO.ReadFromCSV(tbCSVLocation.Text);
                         recordCount = oAttachmentGuids.Count();
                         string fileDirectory = (rbAllAttachments.Checked) ? localDAO.CreateLocalDirectory(tbCSVLocation.Text, false, false, true) : localDAO.CreateLocalDirectory(tbCSVLocation.Text, false, true, true);
                         foreach (Guid attachment in oAttachmentGuids)
                         {
                             oEMailData = null;
                             storeAttahmentDirectory = null;
-                            oEMailData = crmDAO.GetNoteAttachmentData(attachment, Service);
+                            oEMailData = crmDAO.GetActivityMimeAttachmentData(attachment, Service);
                             storeAttahmentDirectory = localDAO.CreateLocalDirectory(Path.Combine(fileDirectory, oEMailData.Id.ToString()), true, false, true);
                             localDAO.CreateAttachmentFile(oEMailData["body"].ToString(), storeAttahmentDirectory, oEMailData["filename"].ToString());
 
