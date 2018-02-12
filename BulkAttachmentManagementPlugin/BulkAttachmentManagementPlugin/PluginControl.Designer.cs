@@ -283,6 +283,7 @@
             this.butExport.TabIndex = 8;
             this.butExport.Text = "Export Results";
             this.butExport.UseVisualStyleBackColor = true;
+            this.butExport.Click += new System.EventHandler(this.butExport_Click);
             // 
             // PluginControl
             // 
