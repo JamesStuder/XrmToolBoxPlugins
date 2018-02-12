@@ -229,7 +229,7 @@ namespace BulkAttachmentManagementPlugin
                 {
                     if (pc.ProgressPercentage == 1)
                     {
-                        SetWorkingMessage(string.Format("Processing {0} of {1}", loopCounter, recordCount));
+                        SetWorkingMessage(string.Format("Processing E-Mail: {0} of {1}", loopCounter, recordCount));
                     }
                     else
                     {
@@ -294,7 +294,7 @@ namespace BulkAttachmentManagementPlugin
                 {
                     if (pc.ProgressPercentage == 1)
                     {
-                        SetWorkingMessage(string.Format("Processing {0} of {1}", loopCounter, recordCount));
+                        SetWorkingMessage(string.Format("Processing Note: {0} of {1}", loopCounter, recordCount));
                     }
                     else
                     {
