@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.gbStep2 = new System.Windows.Forms.GroupBox();
+            this.rbReportOnly = new System.Windows.Forms.RadioButton();
             this.lbCSVLocation = new System.Windows.Forms.Label();
             this.rbSpecificAttachments = new System.Windows.Forms.RadioButton();
             this.rbAllAttachments = new System.Windows.Forms.RadioButton();
@@ -62,6 +63,7 @@
             // 
             // gbStep2
             // 
+            this.gbStep2.Controls.Add(this.rbReportOnly);
             this.gbStep2.Controls.Add(this.lbCSVLocation);
             this.gbStep2.Controls.Add(this.rbSpecificAttachments);
             this.gbStep2.Controls.Add(this.rbAllAttachments);
@@ -74,6 +76,17 @@
             this.gbStep2.TabIndex = 1;
             this.gbStep2.TabStop = false;
             this.gbStep2.Text = "Step 2: (What To Download.)";
+            // 
+            // rbReportOnly
+            // 
+            this.rbReportOnly.AutoSize = true;
+            this.rbReportOnly.Location = new System.Drawing.Point(250, 19);
+            this.rbReportOnly.Name = "rbReportOnly";
+            this.rbReportOnly.Size = new System.Drawing.Size(89, 17);
+            this.rbReportOnly.TabIndex = 5;
+            this.rbReportOnly.Text = "Report ONLY";
+            this.rbReportOnly.UseVisualStyleBackColor = true;
+            this.rbReportOnly.CheckedChanged += new System.EventHandler(this.rbReportOnly_CheckedChanged);
             // 
             // lbCSVLocation
             // 
@@ -335,5 +348,6 @@
         private System.Windows.Forms.RadioButton rbBoth;
         private System.Windows.Forms.GroupBox gbStep4;
         private System.Windows.Forms.Button butExport;
+        private System.Windows.Forms.RadioButton rbReportOnly;
     }
 }

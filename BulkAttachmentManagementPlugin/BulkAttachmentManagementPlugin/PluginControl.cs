@@ -145,6 +145,18 @@ namespace BulkAttachmentManagementPlugin
             gbStep2.Enabled = true;
         }
 
+        private void rbReportOnly_CheckedChanged(object sender, EventArgs e)
+        {
+            if(rbReportOnly.Checked)
+            {
+                lbCSVLocation.Text = "This option will ONLY report on the attachments.  Screen below will be populated and you can export the results.";
+                tbCSVLocation.ReadOnly = false;
+                tbCSVLocation.Enabled = false;
+                butCSVBrowse.Enabled = false;
+                gbStep3.Enabled = true;
+            }
+        }
+
         #endregion
 
         int recordCount;
@@ -152,28 +164,62 @@ namespace BulkAttachmentManagementPlugin
 
         private void PerformAction()
         {
-            #region Download Notes
-            if(rbNotes.Checked)
+            #region Download
+            if(!rbReportOnly.Checked)
             {
-                ProcessNotes();
+                #region Download Notes
+                if (rbNotes.Checked)
+                {
+                    ProcessNotes();
+                }
+                #endregion
+
+                #region Download Emails
+                if (rbEMail.Checked)
+                {
+                    ProcessEmails();
+                }
+                #endregion
+
+                #region Download Both
+                if (rbBoth.Checked)
+                {
+                    ProcessNotes();
+                    ProcessEmails();
+                }
+                #endregion
             }
             #endregion
 
-            #region Download Emails
-            if (rbEMail.Checked)
+            #region Report
+            else
             {
-                ProcessEmails();
+                #region Report Notes
+                if(rbNotes.Checked)
+                {
+                    ReportNotes();
+                }
+                #endregion
+
+                #region Report E-Mails
+                if (rbEMail.Checked)
+                {
+                    ReportEmails();
+                }
+                #endregion
+
+                #region Report Both
+                if (rbBoth.Checked)
+                {
+                    ReportNotes();
+                    ReportEmails();
+                }
+                #endregion
             }
             #endregion
 
-            #region Download Both
-            if (rbBoth.Checked)
-            {
-                ProcessNotes();
-                ProcessEmails();
-            }
-            #endregion
         }
+
         private void ProcessNotes()
         {
             WorkAsync(new WorkAsyncInfo()
@@ -229,7 +275,7 @@ namespace BulkAttachmentManagementPlugin
                 {
                     if (pc.ProgressPercentage == 1)
                     {
-                        SetWorkingMessage(string.Format("Processing E-Mail: {0} of {1}", loopCounter, recordCount));
+                        SetWorkingMessage(string.Format("Processing Notes: {0} of {1}", loopCounter, recordCount));
                     }
                     else
                     {
@@ -294,12 +340,110 @@ namespace BulkAttachmentManagementPlugin
                 {
                     if (pc.ProgressPercentage == 1)
                     {
-                        SetWorkingMessage(string.Format("Processing Note: {0} of {1}", loopCounter, recordCount));
+                        SetWorkingMessage(string.Format("Processing E-mails: {0} of {1}", loopCounter, recordCount));
                     }
                     else
                     {
                         lvMainOutput.Items.Add((ListViewItem)pc.UserState);
                     }
+                }
+            });
+        }
+
+        private void ReportNotes()
+        {
+            OutputModel noteRecord = null;
+            WorkAsync(new WorkAsyncInfo()
+            {
+                Message = "Processing...",
+                Work = (Worker, args) =>
+                {
+                    try
+                    {
+                        CRMAttachmentDAO crmDAO = new CRMAttachmentDAO();
+                        LocalFileSystemDAO localDAO = new LocalFileSystemDAO();
+
+                        List<OutputModel> oNoteData = crmDAO.ReportNoteAttachments(Service);
+
+                        foreach (OutputModel note in oNoteData)
+                        {
+                            noteRecord = note;
+                            ListViewItem _ListViewItem = new ListViewItem(note.DateTimeProcessed);
+                            _ListViewItem.SubItems.Add(note.GUID.ToString());
+                            _ListViewItem.SubItems.Add(note.FileName);
+                            _ListViewItem.SubItems.Add(note.DownloadLocation);
+                            _ListViewItem.SubItems.Add(note.RegardingEntity);
+                            _ListViewItem.SubItems.Add(note.RegardingID);
+                            _ListViewItem.SubItems.Add("");
+
+                            Worker.ReportProgress(0, _ListViewItem);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ListViewItem _ListViewItem = new ListViewItem(noteRecord.DateTimeProcessed);
+                        _ListViewItem.SubItems.Add(noteRecord.GUID);
+                        _ListViewItem.SubItems.Add(noteRecord.FileName);
+                        _ListViewItem.SubItems.Add(noteRecord.DownloadLocation);
+                        _ListViewItem.SubItems.Add(noteRecord.RegardingEntity);
+                        _ListViewItem.SubItems.Add(noteRecord.RegardingID);
+                        _ListViewItem.SubItems.Add(ex.Message);
+
+                        Worker.ReportProgress(0, _ListViewItem);
+                    }
+                },
+                ProgressChanged = pc =>
+                {
+                    lvMainOutput.Items.Add((ListViewItem)pc.UserState);
+                }
+            });
+        }
+
+        private void ReportEmails()
+        {
+            OutputModel emailRecord = null;
+            WorkAsync(new WorkAsyncInfo()
+            {
+                Message = "Processing...",
+                Work = (Worker, args) =>
+                {
+                    try
+                    {
+                        CRMAttachmentDAO crmDAO = new CRMAttachmentDAO();
+                        LocalFileSystemDAO localDAO = new LocalFileSystemDAO();
+
+                        List<OutputModel> oEmailData = crmDAO.ReportMimeAttachments(Service);
+
+                        foreach (OutputModel email in oEmailData)
+                        {
+                            emailRecord = email;
+                            ListViewItem _ListViewItem = new ListViewItem(email.DateTimeProcessed);
+                            _ListViewItem.SubItems.Add(email.GUID.ToString());
+                            _ListViewItem.SubItems.Add(email.FileName);
+                            _ListViewItem.SubItems.Add(email.DownloadLocation);
+                            _ListViewItem.SubItems.Add(email.RegardingEntity);
+                            _ListViewItem.SubItems.Add(email.RegardingID);
+                            _ListViewItem.SubItems.Add("");
+
+                            Worker.ReportProgress(0, _ListViewItem);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ListViewItem _ListViewItem = new ListViewItem(emailRecord.DateTimeProcessed);
+                        _ListViewItem.SubItems.Add(emailRecord.GUID);
+                        _ListViewItem.SubItems.Add(emailRecord.FileName);
+                        _ListViewItem.SubItems.Add(emailRecord.DownloadLocation);
+                        _ListViewItem.SubItems.Add(emailRecord.RegardingEntity);
+                        _ListViewItem.SubItems.Add(emailRecord.RegardingID);
+                        _ListViewItem.SubItems.Add(ex.Message);
+
+                        Worker.ReportProgress(0, _ListViewItem);
+                    }
+                },
+                ProgressChanged = pc =>
+                {
+                    lvMainOutput.Items.Add((ListViewItem)pc.UserState);
                 }
             });
         }
