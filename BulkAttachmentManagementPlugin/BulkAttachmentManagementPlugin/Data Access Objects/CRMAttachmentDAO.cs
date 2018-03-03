@@ -81,6 +81,7 @@ namespace BulkAttachmentManagementPlugin.Data_Access_Objects
                           DateTimeProcessed = DateTime.Now.ToString(),
                           GUID = n["annotationid"].ToString(),
                           FileName = n["filename"].ToString(),
+                          FileSize = n["filesize"].ToString(),
                           DownloadLocation = "Report Only",
                           RegardingEntity = n["objecttypecode"].ToString(),
                           RegardingID = ((EntityReference)n["objectid"]).Id.ToString()
@@ -106,6 +107,7 @@ namespace BulkAttachmentManagementPlugin.Data_Access_Objects
                                     DateTimeProcessed = DateTime.Now.ToString(),
                                     GUID = e["activitymimeattachmentid"].ToString(),
                                     FileName = e["filename"].ToString(),
+                                    FileSize = e["filesize"].ToString(),
                                     DownloadLocation = "Report Only",
                                     RegardingEntity = e["objecttypecode"].ToString(),
                                     RegardingID = ((EntityReference)e["objectid"]).Id.ToString()

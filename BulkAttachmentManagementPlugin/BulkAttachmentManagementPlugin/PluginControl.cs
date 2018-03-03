@@ -96,10 +96,11 @@ namespace BulkAttachmentManagementPlugin
                             DateTimeProcessed = (item.Text != null) ? item.Text : string.Empty,
                             GUID = (item.SubItems[1].Text != null) ? item.SubItems[1].Text : string.Empty,
                             FileName = (item.SubItems[2].Text != null) ? item.SubItems[2].Text : string.Empty,
-                            DownloadLocation = (item.SubItems[3].Text != null) ? item.SubItems[3].Text : string.Empty,
-                            RegardingID = (item.SubItems[4].Text != null) ? item.SubItems[4].Text : string.Empty,
-                            RegardingEntity = (item.SubItems[5].Text != null) ? item.SubItems[5].Text : string.Empty,
-                            ErrorMessage = (item.SubItems[6].Text != null) ? item.SubItems[6].Text : string.Empty
+                            FileSize = (item.SubItems[3].Text != null) ? item.SubItems[3].Text : string.Empty,
+                            DownloadLocation = (item.SubItems[4].Text != null) ? item.SubItems[4].Text : string.Empty,
+                            RegardingID = (item.SubItems[5].Text != null) ? item.SubItems[5].Text : string.Empty,
+                            RegardingEntity = (item.SubItems[6].Text != null) ? item.SubItems[6].Text : string.Empty,
+                            ErrorMessage = (item.SubItems[7].Text != null) ? item.SubItems[7].Text : string.Empty
                         });
                     }
                 }
@@ -248,6 +249,7 @@ namespace BulkAttachmentManagementPlugin
                             ListViewItem _ListViewItem = new ListViewItem(DateTime.Now.ToString());
                             _ListViewItem.SubItems.Add(oNoteData["annotationid"].ToString());
                             _ListViewItem.SubItems.Add(oNoteData["filename"].ToString());
+                            _ListViewItem.SubItems.Add(oNoteData["filesize"].ToString());
                             _ListViewItem.SubItems.Add(storeAttahmentDirectory);
                             _ListViewItem.SubItems.Add(oNoteData["objecttypecode"].ToString());
                             _ListViewItem.SubItems.Add(((EntityReference)oNoteData["objectid"]).Id.ToString());
@@ -263,6 +265,7 @@ namespace BulkAttachmentManagementPlugin
                         ListViewItem _ListViewItem = new ListViewItem(DateTime.Now.ToString());
                         _ListViewItem.SubItems.Add(oNoteData?["annotationid"].ToString());
                         _ListViewItem.SubItems.Add(oNoteData?["filename"].ToString());
+                        _ListViewItem.SubItems.Add(oNoteData["filesize"].ToString());
                         _ListViewItem.SubItems.Add(storeAttahmentDirectory);
                         _ListViewItem.SubItems.Add(oNoteData?["objecttypecode"].ToString());
                         _ListViewItem.SubItems.Add((oNoteData != null) ? ((EntityReference)oNoteData["objectid"]).Id.ToString() : null);
@@ -313,6 +316,7 @@ namespace BulkAttachmentManagementPlugin
                             ListViewItem _ListViewItem = new ListViewItem(DateTime.Now.ToString());
                             _ListViewItem.SubItems.Add(oEMailData["activitymimeattachmentid"].ToString());
                             _ListViewItem.SubItems.Add(oEMailData["filename"].ToString());
+                            _ListViewItem.SubItems.Add(oEMailData["filesize"].ToString());
                             _ListViewItem.SubItems.Add(storeAttahmentDirectory);
                             _ListViewItem.SubItems.Add(oEMailData["objecttypecode"].ToString());
                             _ListViewItem.SubItems.Add(((EntityReference)oEMailData["objectid"]).Id.ToString());
@@ -328,6 +332,7 @@ namespace BulkAttachmentManagementPlugin
                         ListViewItem _ListViewItem = new ListViewItem(DateTime.Now.ToString());
                         _ListViewItem.SubItems.Add(oEMailData?["activitymimeattachmentid"].ToString());
                         _ListViewItem.SubItems.Add(oEMailData?["filename"].ToString());
+                        _ListViewItem.SubItems.Add(oEMailData["filesize"].ToString());
                         _ListViewItem.SubItems.Add(storeAttahmentDirectory);
                         _ListViewItem.SubItems.Add(oEMailData?["objecttypecode"].ToString());
                         _ListViewItem.SubItems.Add((oEMailData != null) ? ((EntityReference)oEMailData["objectid"]).Id.ToString() : null);
@@ -371,6 +376,7 @@ namespace BulkAttachmentManagementPlugin
                             ListViewItem _ListViewItem = new ListViewItem(note.DateTimeProcessed);
                             _ListViewItem.SubItems.Add(note.GUID.ToString());
                             _ListViewItem.SubItems.Add(note.FileName);
+                            _ListViewItem.SubItems.Add(note.FileSize);
                             _ListViewItem.SubItems.Add(note.DownloadLocation);
                             _ListViewItem.SubItems.Add(note.RegardingEntity);
                             _ListViewItem.SubItems.Add(note.RegardingID);
@@ -384,6 +390,7 @@ namespace BulkAttachmentManagementPlugin
                         ListViewItem _ListViewItem = new ListViewItem(noteRecord.DateTimeProcessed);
                         _ListViewItem.SubItems.Add(noteRecord.GUID);
                         _ListViewItem.SubItems.Add(noteRecord.FileName);
+                        _ListViewItem.SubItems.Add(noteRecord.FileSize);
                         _ListViewItem.SubItems.Add(noteRecord.DownloadLocation);
                         _ListViewItem.SubItems.Add(noteRecord.RegardingEntity);
                         _ListViewItem.SubItems.Add(noteRecord.RegardingID);
@@ -420,6 +427,7 @@ namespace BulkAttachmentManagementPlugin
                             ListViewItem _ListViewItem = new ListViewItem(email.DateTimeProcessed);
                             _ListViewItem.SubItems.Add(email.GUID.ToString());
                             _ListViewItem.SubItems.Add(email.FileName);
+                            _ListViewItem.SubItems.Add(email.FileSize);
                             _ListViewItem.SubItems.Add(email.DownloadLocation);
                             _ListViewItem.SubItems.Add(email.RegardingEntity);
                             _ListViewItem.SubItems.Add(email.RegardingID);
@@ -433,6 +441,7 @@ namespace BulkAttachmentManagementPlugin
                         ListViewItem _ListViewItem = new ListViewItem(emailRecord.DateTimeProcessed);
                         _ListViewItem.SubItems.Add(emailRecord.GUID);
                         _ListViewItem.SubItems.Add(emailRecord.FileName);
+                        _ListViewItem.SubItems.Add(emailRecord.FileSize);
                         _ListViewItem.SubItems.Add(emailRecord.DownloadLocation);
                         _ListViewItem.SubItems.Add(emailRecord.RegardingEntity);
                         _ListViewItem.SubItems.Add(emailRecord.RegardingID);

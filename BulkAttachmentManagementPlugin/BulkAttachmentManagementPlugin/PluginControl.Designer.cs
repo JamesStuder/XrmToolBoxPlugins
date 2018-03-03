@@ -41,6 +41,7 @@
             this.chDateTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.chGUID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.chFileName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.chFileSize = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.chDownloadLocation = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.chRegardingEntity = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.chRegardID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -168,6 +169,7 @@
             this.chDateTime,
             this.chGUID,
             this.chFileName,
+            this.chFileSize,
             this.chDownloadLocation,
             this.chRegardingEntity,
             this.chRegardID,
@@ -194,6 +196,11 @@
             // 
             this.chFileName.Text = "File Name";
             this.chFileName.Width = 150;
+            // 
+            // chFileSize
+            // 
+            this.chFileSize.Text = "File Size (Bytes)";
+            this.chFileSize.Width = 150;
             // 
             // chDownloadLocation
             // 
@@ -349,5 +356,6 @@
         private System.Windows.Forms.GroupBox gbStep4;
         private System.Windows.Forms.Button butExport;
         private System.Windows.Forms.RadioButton rbReportOnly;
+        private System.Windows.Forms.ColumnHeader chFileSize;
     }
 }
