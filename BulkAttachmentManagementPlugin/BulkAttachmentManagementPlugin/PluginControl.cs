@@ -230,48 +230,56 @@ namespace BulkAttachmentManagementPlugin
                 {
                     Entity oNoteData = new Entity();
                     string storeAttahmentDirectory = null;
-                    try
-                    {
-                        CRMAttachmentDAO crmDAO = new CRMAttachmentDAO();
-                        LocalFileSystemDAO localDAO = new LocalFileSystemDAO();
 
-                        List<Guid> oAttachmentGuids = (rbAllAttachments.Checked) ? crmDAO.GetListOfAttachments(Service) : localDAO.ReadFromCSV(tbCSVLocation.Text);
-                        recordCount = oAttachmentGuids.Count();
-                        string fileDirectory = (rbAllAttachments.Checked) ? localDAO.CreateLocalDirectory(tbCSVLocation.Text, false, false, false) : localDAO.CreateLocalDirectory(tbCSVLocation.Text, false, true, false);
-                        foreach (Guid attachment in oAttachmentGuids)
+                    CRMAttachmentDAO crmDAO = new CRMAttachmentDAO();
+                    LocalFileSystemDAO localDAO = new LocalFileSystemDAO();
+
+                    List<Guid> oAttachmentGuids = (rbAllAttachments.Checked) ? crmDAO.GetListOfAttachments(Service) : localDAO.ReadFromCSV(tbCSVLocation.Text);
+                    recordCount = oAttachmentGuids.Count();
+                    string fileDirectory = (rbAllAttachments.Checked) ? localDAO.CreateLocalDirectory(tbCSVLocation.Text, false, false, false) : localDAO.CreateLocalDirectory(tbCSVLocation.Text, false, true, false);
+                    foreach (Guid attachment in oAttachmentGuids)
+                    {
+                        try
                         {
                             oNoteData = null;
                             storeAttahmentDirectory = null;
                             oNoteData = crmDAO.GetNoteAttachmentData(attachment, Service);
-                            storeAttahmentDirectory = localDAO.CreateLocalDirectory(Path.Combine(fileDirectory, oNoteData.Id.ToString()), true, false, false);
-                            localDAO.CreateAttachmentFile(oNoteData["documentbody"].ToString(), storeAttahmentDirectory, oNoteData["filename"].ToString());
+                            if(oNoteData["filesize"].ToString() != "0")
+                            {
+                                storeAttahmentDirectory = localDAO.CreateLocalDirectory(Path.Combine(fileDirectory, oNoteData.Id.ToString()), true, false, false);
+                                localDAO.CreateAttachmentFile(oNoteData["documentbody"].ToString(), storeAttahmentDirectory, oNoteData["filename"].ToString());
 
+                                ListViewItem _ListViewItem = new ListViewItem(DateTime.Now.ToString());
+                                _ListViewItem.SubItems.Add(oNoteData["annotationid"].ToString());
+                                _ListViewItem.SubItems.Add(oNoteData["filename"].ToString());
+                                _ListViewItem.SubItems.Add(oNoteData["filesize"].ToString());
+                                _ListViewItem.SubItems.Add(storeAttahmentDirectory);
+                                _ListViewItem.SubItems.Add(oNoteData["objecttypecode"].ToString());
+                                _ListViewItem.SubItems.Add(((EntityReference)oNoteData["objectid"]).Id.ToString());
+                                _ListViewItem.SubItems.Add("");
+
+                                Worker.ReportProgress(0, _ListViewItem);
+                                Worker.ReportProgress(1);
+                                loopCounter++;
+                            }
+                            else
+                            {
+                                throw new Exception("File size is 0.");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
                             ListViewItem _ListViewItem = new ListViewItem(DateTime.Now.ToString());
-                            _ListViewItem.SubItems.Add(oNoteData["annotationid"].ToString());
-                            _ListViewItem.SubItems.Add(oNoteData["filename"].ToString());
+                            _ListViewItem.SubItems.Add(oNoteData?["annotationid"].ToString());
+                            _ListViewItem.SubItems.Add(oNoteData?["filename"].ToString());
                             _ListViewItem.SubItems.Add(oNoteData["filesize"].ToString());
                             _ListViewItem.SubItems.Add(storeAttahmentDirectory);
-                            _ListViewItem.SubItems.Add(oNoteData["objecttypecode"].ToString());
-                            _ListViewItem.SubItems.Add(((EntityReference)oNoteData["objectid"]).Id.ToString());
-                            _ListViewItem.SubItems.Add("");
+                            _ListViewItem.SubItems.Add(oNoteData?["objecttypecode"].ToString());
+                            _ListViewItem.SubItems.Add((oNoteData != null) ? ((EntityReference)oNoteData["objectid"]).Id.ToString() : null);
+                            _ListViewItem.SubItems.Add(ex.Message);
 
                             Worker.ReportProgress(0, _ListViewItem);
-                            Worker.ReportProgress(1);
-                            loopCounter++;
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        ListViewItem _ListViewItem = new ListViewItem(DateTime.Now.ToString());
-                        _ListViewItem.SubItems.Add(oNoteData?["annotationid"].ToString());
-                        _ListViewItem.SubItems.Add(oNoteData?["filename"].ToString());
-                        _ListViewItem.SubItems.Add(oNoteData["filesize"].ToString());
-                        _ListViewItem.SubItems.Add(storeAttahmentDirectory);
-                        _ListViewItem.SubItems.Add(oNoteData?["objecttypecode"].ToString());
-                        _ListViewItem.SubItems.Add((oNoteData != null) ? ((EntityReference)oNoteData["objectid"]).Id.ToString() : null);
-                        _ListViewItem.SubItems.Add(ex.Message);
-
-                        Worker.ReportProgress(0, _ListViewItem);
                     }
                 },
                 ProgressChanged = pc =>
@@ -297,48 +305,57 @@ namespace BulkAttachmentManagementPlugin
                 {
                     Entity oEMailData = new Entity();
                     string storeAttahmentDirectory = null;
-                    try
-                    {
-                        CRMAttachmentDAO crmDAO = new CRMAttachmentDAO();
-                        LocalFileSystemDAO localDAO = new LocalFileSystemDAO();
 
-                        List<Guid> oAttachmentGuids = (rbAllAttachments.Checked) ? crmDAO.GetListOfActivityMimeAttachmentGuids(Service) : localDAO.ReadFromCSV(tbCSVLocation.Text);
-                        recordCount = oAttachmentGuids.Count();
-                        string fileDirectory = (rbAllAttachments.Checked) ? localDAO.CreateLocalDirectory(tbCSVLocation.Text, false, false, true) : localDAO.CreateLocalDirectory(tbCSVLocation.Text, false, true, true);
-                        foreach (Guid attachment in oAttachmentGuids)
+                    CRMAttachmentDAO crmDAO = new CRMAttachmentDAO();
+                    LocalFileSystemDAO localDAO = new LocalFileSystemDAO();
+
+                    List<Guid> oAttachmentGuids = (rbAllAttachments.Checked) ? crmDAO.GetListOfActivityMimeAttachmentGuids(Service) : localDAO.ReadFromCSV(tbCSVLocation.Text);
+                    recordCount = oAttachmentGuids.Count();
+                    string fileDirectory = (rbAllAttachments.Checked) ? localDAO.CreateLocalDirectory(tbCSVLocation.Text, false, false, true) : localDAO.CreateLocalDirectory(tbCSVLocation.Text, false, true, true);
+                    foreach (Guid attachment in oAttachmentGuids)
+                    {
+                        try
                         {
                             oEMailData = null;
                             storeAttahmentDirectory = null;
                             oEMailData = crmDAO.GetActivityMimeAttachmentData(attachment, Service);
-                            storeAttahmentDirectory = localDAO.CreateLocalDirectory(Path.Combine(fileDirectory, oEMailData.Id.ToString()), true, false, true);
-                            localDAO.CreateAttachmentFile(oEMailData["body"].ToString(), storeAttahmentDirectory, oEMailData["filename"].ToString());
 
+                            if (oEMailData["filesize"].ToString() != "0")
+                            {
+                                storeAttahmentDirectory = localDAO.CreateLocalDirectory(Path.Combine(fileDirectory, oEMailData.Id.ToString()), true, false, true);
+                                localDAO.CreateAttachmentFile(oEMailData["body"].ToString(), storeAttahmentDirectory, oEMailData["filename"].ToString());
+
+                                ListViewItem _ListViewItem = new ListViewItem(DateTime.Now.ToString());
+                                _ListViewItem.SubItems.Add(oEMailData["activitymimeattachmentid"].ToString());
+                                _ListViewItem.SubItems.Add(oEMailData["filename"].ToString());
+                                _ListViewItem.SubItems.Add(oEMailData["filesize"].ToString());
+                                _ListViewItem.SubItems.Add(storeAttahmentDirectory);
+                                _ListViewItem.SubItems.Add(oEMailData["objecttypecode"].ToString());
+                                _ListViewItem.SubItems.Add(((EntityReference)oEMailData["objectid"]).Id.ToString());
+                                _ListViewItem.SubItems.Add("");
+
+                                Worker.ReportProgress(0, _ListViewItem);
+                                Worker.ReportProgress(1);
+                                loopCounter++;
+                            }
+                            else
+                            {
+                                throw new Exception("File size is 0.");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
                             ListViewItem _ListViewItem = new ListViewItem(DateTime.Now.ToString());
-                            _ListViewItem.SubItems.Add(oEMailData["activitymimeattachmentid"].ToString());
-                            _ListViewItem.SubItems.Add(oEMailData["filename"].ToString());
+                            _ListViewItem.SubItems.Add(oEMailData?["activitymimeattachmentid"].ToString());
+                            _ListViewItem.SubItems.Add(oEMailData?["filename"].ToString());
                             _ListViewItem.SubItems.Add(oEMailData["filesize"].ToString());
                             _ListViewItem.SubItems.Add(storeAttahmentDirectory);
-                            _ListViewItem.SubItems.Add(oEMailData["objecttypecode"].ToString());
-                            _ListViewItem.SubItems.Add(((EntityReference)oEMailData["objectid"]).Id.ToString());
-                            _ListViewItem.SubItems.Add("");
+                            _ListViewItem.SubItems.Add(oEMailData?["objecttypecode"].ToString());
+                            _ListViewItem.SubItems.Add((oEMailData != null) ? ((EntityReference)oEMailData["objectid"]).Id.ToString() : null);
+                            _ListViewItem.SubItems.Add(ex.Message);
 
                             Worker.ReportProgress(0, _ListViewItem);
-                            Worker.ReportProgress(1);
-                            loopCounter++;
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        ListViewItem _ListViewItem = new ListViewItem(DateTime.Now.ToString());
-                        _ListViewItem.SubItems.Add(oEMailData?["activitymimeattachmentid"].ToString());
-                        _ListViewItem.SubItems.Add(oEMailData?["filename"].ToString());
-                        _ListViewItem.SubItems.Add(oEMailData["filesize"].ToString());
-                        _ListViewItem.SubItems.Add(storeAttahmentDirectory);
-                        _ListViewItem.SubItems.Add(oEMailData?["objecttypecode"].ToString());
-                        _ListViewItem.SubItems.Add((oEMailData != null) ? ((EntityReference)oEMailData["objectid"]).Id.ToString() : null);
-                        _ListViewItem.SubItems.Add(ex.Message);
-
-                        Worker.ReportProgress(0, _ListViewItem);
                     }
                 },
                 ProgressChanged = pc =>
@@ -363,14 +380,15 @@ namespace BulkAttachmentManagementPlugin
                 Message = "Processing...",
                 Work = (Worker, args) =>
                 {
-                    try
+
+                    CRMAttachmentDAO crmDAO = new CRMAttachmentDAO();
+                    LocalFileSystemDAO localDAO = new LocalFileSystemDAO();
+
+                    List<OutputModel> oNoteData = crmDAO.ReportNoteAttachments(Service);
+
+                    foreach (OutputModel note in oNoteData)
                     {
-                        CRMAttachmentDAO crmDAO = new CRMAttachmentDAO();
-                        LocalFileSystemDAO localDAO = new LocalFileSystemDAO();
-
-                        List<OutputModel> oNoteData = crmDAO.ReportNoteAttachments(Service);
-
-                        foreach (OutputModel note in oNoteData)
+                        try
                         {
                             noteRecord = note;
                             ListViewItem _ListViewItem = new ListViewItem(note.DateTimeProcessed);
@@ -384,19 +402,19 @@ namespace BulkAttachmentManagementPlugin
 
                             Worker.ReportProgress(0, _ListViewItem);
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        ListViewItem _ListViewItem = new ListViewItem(noteRecord.DateTimeProcessed);
-                        _ListViewItem.SubItems.Add(noteRecord.GUID);
-                        _ListViewItem.SubItems.Add(noteRecord.FileName);
-                        _ListViewItem.SubItems.Add(noteRecord.FileSize);
-                        _ListViewItem.SubItems.Add(noteRecord.DownloadLocation);
-                        _ListViewItem.SubItems.Add(noteRecord.RegardingEntity);
-                        _ListViewItem.SubItems.Add(noteRecord.RegardingID);
-                        _ListViewItem.SubItems.Add(ex.Message);
+                        catch (Exception ex)
+                        {
+                            ListViewItem _ListViewItem = new ListViewItem(noteRecord.DateTimeProcessed);
+                            _ListViewItem.SubItems.Add(noteRecord.GUID);
+                            _ListViewItem.SubItems.Add(noteRecord.FileName);
+                            _ListViewItem.SubItems.Add(noteRecord.FileSize);
+                            _ListViewItem.SubItems.Add(noteRecord.DownloadLocation);
+                            _ListViewItem.SubItems.Add(noteRecord.RegardingEntity);
+                            _ListViewItem.SubItems.Add(noteRecord.RegardingID);
+                            _ListViewItem.SubItems.Add(ex.Message);
 
-                        Worker.ReportProgress(0, _ListViewItem);
+                            Worker.ReportProgress(0, _ListViewItem);
+                        }
                     }
                 },
                 ProgressChanged = pc =>

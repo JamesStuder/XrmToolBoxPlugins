@@ -140,7 +140,6 @@
     <PostBuildEvent>if $(ConfigurationName) == Debug (
   IF NOT EXIST Plugins mkdir Plugins
   move /Y BulkAttachmentManagementPlugin.dll Plugins
-  move /Y BulkAttachmentManagementPlugin.pdb Plugins
 )</PostBuildEvent>
   </PropertyGroup>
 </Project>
