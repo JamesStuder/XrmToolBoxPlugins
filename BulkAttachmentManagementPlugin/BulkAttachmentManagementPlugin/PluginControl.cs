@@ -178,24 +178,24 @@ namespace BulkAttachmentManagementPlugin
                 
                 if (RadioNotes.Checked)
                 {
-                    ProcessNotes();
+                    DownloadNotes();
                     return;
                 } 
                 else if (RadioEmail.Checked)
                 {
-                    ProcessEmails();
+                    DownloadEmails();
                     return;
                 }
                 else if (RadioFiles.Checked)
                 {
-                    ProcessFiles();
+                    DownloadFiles();
                     return;
                 }
                 else if (RadioAll.Checked)
                 {
-                    ProcessNotes();
-                    ProcessEmails();
-                    ProcessFiles();
+                    DownloadNotes();
+                    DownloadEmails();
+                    DownloadFiles();
                     return;
                 }
             }
@@ -224,7 +224,7 @@ namespace BulkAttachmentManagementPlugin
         }
 
         #region Process Downloads
-        private void ProcessNotes()
+        private void DownloadNotes()
         {
             WorkAsync(new WorkAsyncInfo
             {
@@ -293,7 +293,7 @@ namespace BulkAttachmentManagementPlugin
             });
         }
 
-        private void ProcessEmails()
+        private void DownloadEmails()
         {
             WorkAsync(new WorkAsyncInfo()
             {
@@ -363,7 +363,7 @@ namespace BulkAttachmentManagementPlugin
             });
         }
 
-        private void ProcessFiles()
+        private void DownloadFiles()
         {
             WorkAsync(new WorkAsyncInfo()
             {
