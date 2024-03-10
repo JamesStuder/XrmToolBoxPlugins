@@ -93,7 +93,7 @@ namespace BulkAttachmentManagementPlugin
             {
                 return;
             }
-            LocalFileSystemDAO lfsDao = new LocalFileSystemDAO();
+            LocalFileSystemDao lfsDao = new LocalFileSystemDao();
             List<OutputModel> oOutputModel = new List<OutputModel>();
             if (ListViewMainOutput.Items.Count > 0 && ListViewMainOutput != null)
             {
@@ -101,11 +101,11 @@ namespace BulkAttachmentManagementPlugin
                     select new OutputModel
                     {
                         DateTimeProcessed = item.Text ?? string.Empty,
-                        GUID = item.SubItems[1].Text ?? string.Empty,
+                        Guid = item.SubItems[1].Text ?? string.Empty,
                         FileName = item.SubItems[2].Text ?? string.Empty,
                         FileSize = item.SubItems[3].Text ?? string.Empty,
                         DownloadLocation = item.SubItems[4].Text ?? string.Empty,
-                        RegardingID = item.SubItems[5].Text ?? string.Empty,
+                        RegardingId = item.SubItems[5].Text ?? string.Empty,
                         RegardingEntity = item.SubItems[6].Text ?? string.Empty,
                         ErrorMessage = item.SubItems[7].Text ?? string.Empty
                     });
@@ -115,7 +115,7 @@ namespace BulkAttachmentManagementPlugin
                 Message = "Exporting Data...",
                 Work = (worker, args) =>
                 {
-                    lfsDao.ExportResultsToCSV(oOutputModel, SaveFileDialogCsvFile.FileName);
+                    lfsDao.ExportResultsToCsv(oOutputModel, SaveFileDialogCsvFile.FileName);
                 }
             });
         }
@@ -234,10 +234,10 @@ namespace BulkAttachmentManagementPlugin
                     Entity oNoteData = new Entity();
                     string storeAttachmentDirectory = null;
 
-                    CRMAttachmentDAO crmDao = new CRMAttachmentDAO();
-                    LocalFileSystemDAO localDao = new LocalFileSystemDAO();
+                    CrmAttachmentDao crmDao = new CrmAttachmentDao();
+                    LocalFileSystemDao localDao = new LocalFileSystemDao();
 
-                    List<Guid> oAttachmentGuids = RadioDownloadAll.Checked ? crmDao.GetListOfAttachments(Service) : localDao.ReadFromCSV(TextBoxCsvLocation.Text);
+                    List<Guid> oAttachmentGuids = RadioDownloadAll.Checked ? crmDao.GetListOfAttachments(Service) : localDao.ReadFromCsv(TextBoxCsvLocation.Text);
                     string fileDirectory = RadioDownloadAll.Checked ? localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, false, false) : localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, true, false);
                     for (int index = 0; index < oAttachmentGuids.Count; index++)
                     {
@@ -303,10 +303,10 @@ namespace BulkAttachmentManagementPlugin
                     Entity oEMailData = new Entity();
                     string storeAttachmentDirectory = null;
 
-                    CRMAttachmentDAO crmDao = new CRMAttachmentDAO();
-                    LocalFileSystemDAO localDao = new LocalFileSystemDAO();
+                    CrmAttachmentDao crmDao = new CrmAttachmentDao();
+                    LocalFileSystemDao localDao = new LocalFileSystemDao();
 
-                    List<Guid> oAttachmentGuids = RadioDownloadAll.Checked ? crmDao.GetListOfActivityMimeAttachmentGuids(Service) : localDao.ReadFromCSV(TextBoxCsvLocation.Text);
+                    List<Guid> oAttachmentGuids = RadioDownloadAll.Checked ? crmDao.GetListOfActivityMimeAttachmentGuids(Service) : localDao.ReadFromCsv(TextBoxCsvLocation.Text);
                     
                     string fileDirectory = RadioDownloadAll.Checked ? localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, false, true) : localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, true, true);
                     for (int index = 0; index < oAttachmentGuids.Count; index++)
@@ -373,10 +373,10 @@ namespace BulkAttachmentManagementPlugin
                     Entity oEMailData = new Entity();
                     string storeAttachmentDirectory = null;
 
-                    CRMAttachmentDAO crmDao = new CRMAttachmentDAO();
-                    LocalFileSystemDAO localDao = new LocalFileSystemDAO();
+                    CrmAttachmentDao crmDao = new CrmAttachmentDao();
+                    LocalFileSystemDao localDao = new LocalFileSystemDao();
 
-                    List<Guid> oAttachmentGuids = RadioDownloadAll.Checked ? crmDao.GetListOfActivityMimeAttachmentGuids(Service) : localDao.ReadFromCSV(TextBoxCsvLocation.Text);
+                    List<Guid> oAttachmentGuids = RadioDownloadAll.Checked ? crmDao.GetListOfActivityMimeAttachmentGuids(Service) : localDao.ReadFromCsv(TextBoxCsvLocation.Text);
 
                     string fileDirectory = RadioDownloadAll.Checked ? localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, false, true) : localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, true, true);
                     for (int index = 0; index < oAttachmentGuids.Count; index++)
@@ -443,7 +443,7 @@ namespace BulkAttachmentManagementPlugin
                 Work = (worker, args) =>
                 {
 
-                    CRMAttachmentDAO crmDao = new CRMAttachmentDAO();
+                    CrmAttachmentDao crmDao = new CrmAttachmentDao();
                     List<OutputModel> oNoteData = crmDao.ReportNoteAttachments(Service);
 
                     for (int index = 0; index < oNoteData.Count; index++)
@@ -455,22 +455,22 @@ namespace BulkAttachmentManagementPlugin
                         
                         try
                         {
-                            listViewItem.SubItems.Add(note.GUID);
+                            listViewItem.SubItems.Add(note.Guid);
                             listViewItem.SubItems.Add(note.FileName);
                             listViewItem.SubItems.Add(note.FileSize);
                             listViewItem.SubItems.Add(note.DownloadLocation);
                             listViewItem.SubItems.Add(note.RegardingEntity);
-                            listViewItem.SubItems.Add(note.RegardingID);
+                            listViewItem.SubItems.Add(note.RegardingId);
                             listViewItem.SubItems.Add("");
                         }
                         catch (Exception ex)
                         {
-                            listViewItem.SubItems.Add(note.GUID);
+                            listViewItem.SubItems.Add(note.Guid);
                             listViewItem.SubItems.Add(note.FileName);
                             listViewItem.SubItems.Add(note.FileSize);
                             listViewItem.SubItems.Add(note.DownloadLocation);
                             listViewItem.SubItems.Add(note.RegardingEntity);
-                            listViewItem.SubItems.Add(note.RegardingID);
+                            listViewItem.SubItems.Add(note.RegardingId);
                             listViewItem.SubItems.Add(ex.Message);
                         }
                         worker.ReportProgress(progressPercentage, processingMessage);
@@ -494,7 +494,7 @@ namespace BulkAttachmentManagementPlugin
                 Message = "Processing...",
                 Work = (worker, args) =>
                 {
-                    CRMAttachmentDAO crmDao = new CRMAttachmentDAO();
+                    CrmAttachmentDao crmDao = new CrmAttachmentDao();
                     List<OutputModel> oEmailData = crmDao.ReportMimeAttachments(Service);
                     for (int index = 0; index < oEmailData.Count; index++)
                     {
@@ -505,22 +505,22 @@ namespace BulkAttachmentManagementPlugin
                         try
                         {
                             
-                            listViewItem.SubItems.Add(email.GUID);
+                            listViewItem.SubItems.Add(email.Guid);
                             listViewItem.SubItems.Add(email.FileName);
                             listViewItem.SubItems.Add(email.FileSize);
                             listViewItem.SubItems.Add(email.DownloadLocation);
                             listViewItem.SubItems.Add(email.RegardingEntity);
-                            listViewItem.SubItems.Add(email.RegardingID);
+                            listViewItem.SubItems.Add(email.RegardingId);
                             listViewItem.SubItems.Add("");
                         }
                         catch (Exception ex)
                         {
-                            listViewItem.SubItems.Add(email.GUID);
+                            listViewItem.SubItems.Add(email.Guid);
                             listViewItem.SubItems.Add(email.FileName);
                             listViewItem.SubItems.Add(email.FileSize);
                             listViewItem.SubItems.Add(email.DownloadLocation);
                             listViewItem.SubItems.Add(email.RegardingEntity);
-                            listViewItem.SubItems.Add(email.RegardingID);
+                            listViewItem.SubItems.Add(email.RegardingId);
                             listViewItem.SubItems.Add(ex.Message);
                         }
                         worker.ReportProgress(progressPercentage, processingMessage);
@@ -544,7 +544,7 @@ namespace BulkAttachmentManagementPlugin
                 Message = "Processing...",
                 Work = (worker, args) =>
                 {
-                    CRMAttachmentDAO crmDao = new CRMAttachmentDAO();
+                    CrmAttachmentDao crmDao = new CrmAttachmentDao();
                     List<OutputModel> oEmailData = crmDao.ReportMimeAttachments(Service);
                     for (int index = 0; index < oEmailData.Count; index++)
                     {
@@ -555,22 +555,22 @@ namespace BulkAttachmentManagementPlugin
                         try
                         {
 
-                            listViewItem.SubItems.Add(email.GUID);
+                            listViewItem.SubItems.Add(email.Guid);
                             listViewItem.SubItems.Add(email.FileName);
                             listViewItem.SubItems.Add(email.FileSize);
                             listViewItem.SubItems.Add(email.DownloadLocation);
                             listViewItem.SubItems.Add(email.RegardingEntity);
-                            listViewItem.SubItems.Add(email.RegardingID);
+                            listViewItem.SubItems.Add(email.RegardingId);
                             listViewItem.SubItems.Add("");
                         }
                         catch (Exception ex)
                         {
-                            listViewItem.SubItems.Add(email.GUID);
+                            listViewItem.SubItems.Add(email.Guid);
                             listViewItem.SubItems.Add(email.FileName);
                             listViewItem.SubItems.Add(email.FileSize);
                             listViewItem.SubItems.Add(email.DownloadLocation);
                             listViewItem.SubItems.Add(email.RegardingEntity);
-                            listViewItem.SubItems.Add(email.RegardingID);
+                            listViewItem.SubItems.Add(email.RegardingId);
                             listViewItem.SubItems.Add(ex.Message);
                         }
                         worker.ReportProgress(progressPercentage, processingMessage);

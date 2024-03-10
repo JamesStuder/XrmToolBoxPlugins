@@ -5,11 +5,11 @@ using System.IO;
 
 namespace BulkAttachmentManagementPlugin.Data_Access_Objects
 {
-    public class LocalFileSystemDAO
+    public class LocalFileSystemDao
     {
-        public List<Guid> ReadFromCSV(string fileLocation)
+        public List<Guid> ReadFromCsv(string fileLocation)
         {
-            string line = null;
+            string line;
             List<Guid> oGuids = new List<Guid>();
             StreamReader reader = new StreamReader(fileLocation);
             while((line = reader.ReadLine()) != null)
@@ -19,7 +19,7 @@ namespace BulkAttachmentManagementPlugin.Data_Access_Objects
             return oGuids;
         }
 
-        public void ExportResultsToCSV(List<OutputModel> oOutputModel, string fileLocation)
+        public void ExportResultsToCsv(List<OutputModel> oOutputModel, string fileLocation)
         {
             //Insert header
             string rowToInsert = "Date Processed|GUID|File Name|Download Location|Regarding Entity|Regarding ID|Error Message \r\n";
@@ -27,14 +27,14 @@ namespace BulkAttachmentManagementPlugin.Data_Access_Objects
             //Insert each row
             foreach (OutputModel row in oOutputModel)
             {
-                rowToInsert = $"{row.DateTimeProcessed}|{row.GUID}|{row.FileName}|{row.DownloadLocation}|{row.RegardingEntity}|{row.RegardingID}|{row.ErrorMessage}{"\r\n"}";
+                rowToInsert = $"{row.DateTimeProcessed}|{row.Guid}|{row.FileName}|{row.DownloadLocation}|{row.RegardingEntity}|{row.RegardingId}|{row.ErrorMessage}\r\n";
                 File.AppendAllText(fileLocation,rowToInsert);
             }
         }
 
-        public string CreateLocalDirectory(string fileLocation, bool isNewAttachment, bool isCSVLocation, bool isMimeAttachment)
+        public string CreateLocalDirectory(string fileLocation, bool isNewAttachment, bool isCsvLocation, bool isMimeAttachment)
         {
-            string filePath = (isCSVLocation) ? Path.GetDirectoryName(fileLocation) : fileLocation;
+            string filePath = (isCsvLocation) ? Path.GetDirectoryName(fileLocation) : fileLocation;
             
             if(!isNewAttachment)
             {

@@ -209,8 +209,8 @@
     <Compile Include="Constants\ActivityMimeAttachment.cs" />
     <Compile Include="Constants\Annotation.cs" />
     <Compile Include="Constants\PluginConstants.cs" />
-    <Compile Include="Data Access Objects\CRMAttachmentDAO.cs" />
-    <Compile Include="Data Access Objects\LocalFileSystemDAO.cs" />
+    <Compile Include="Data Access Objects\CrmAttachmentDao.cs" />
+    <Compile Include="Data Access Objects\LocalFileSystemDao.cs" />
     <Compile Include="Models\OutputModel.cs" />
     <Compile Include="Models\SettingsModel.cs" />
     <Compile Include="PluginControl.cs">
