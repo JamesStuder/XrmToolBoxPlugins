@@ -36,31 +36,31 @@ namespace BulkAttachmentManagementPlugin
         #region Buttons
         private void butCSVBrowse_Click(object sender, EventArgs e)
         {
-            if(rbAllAttachments.Enabled && rbSpecificAttachments.Enabled)
+            if(RadioDownloadAll.Enabled && RadioDownloadSpecific.Enabled)
             {
-                switch (rbAllAttachments.Checked)
+                switch (RadioDownloadAll.Checked)
                 {
-                    case false when rbSpecificAttachments.Checked == false:
+                    case false when RadioDownloadSpecific.Checked == false:
                         MessageBox.Show(@"Please choose an option in step 2", @"Missing choice", MessageBoxButtons.OK,MessageBoxIcon.Error);
                         break;
                     case true:
                     {
-                        DialogResult fbdResult = fbdMainFile.ShowDialog();
+                        DialogResult fbdResult = FolderBrowserDialogMainFile.ShowDialog();
                         if (fbdResult == DialogResult.OK)
                         {
-                            tbCSVLocation.Text = fbdMainFile.SelectedPath;
-                            gbStep3.Enabled = true;
+                            TextBoxCsvLocation.Text = FolderBrowserDialogMainFile.SelectedPath;
+                            GroupStep3.Enabled = true;
                         }
 
                         break;
                     }
                     default:
                     {
-                        DialogResult ofdResult = ofdCVSFile.ShowDialog();
+                        DialogResult ofdResult = OpenFileDianlogCvsFile.ShowDialog();
                         if (ofdResult == DialogResult.OK)
                         {
-                            tbCSVLocation.Text = ofdCVSFile.FileName;
-                            gbStep3.Enabled = true;
+                            TextBoxCsvLocation.Text = OpenFileDianlogCvsFile.FileName;
+                            GroupStep3.Enabled = true;
                         }
 
                         break;
@@ -69,11 +69,11 @@ namespace BulkAttachmentManagementPlugin
             }
             else
             {
-                DialogResult fbdResult = fbdMainFile.ShowDialog();
+                DialogResult fbdResult = FolderBrowserDialogMainFile.ShowDialog();
                 if(fbdResult == DialogResult.OK)
                 {
-                    tbCSVLocation.Text = fbdMainFile.SelectedPath;
-                    gbStep3.Enabled = true;
+                    TextBoxCsvLocation.Text = FolderBrowserDialogMainFile.SelectedPath;
+                    GroupStep3.Enabled = true;
                 }
             }
 
@@ -86,14 +86,14 @@ namespace BulkAttachmentManagementPlugin
 
         private void butExport_Click(object sender, EventArgs e)
         {
-            DialogResult sfdResult = sfdCSVFile.ShowDialog();
+            DialogResult sfdResult = SaveFileDialogCsvFile.ShowDialog();
             if(sfdResult == DialogResult.OK)
             {
                 LocalFileSystemDAO lfsDAO = new LocalFileSystemDAO();
                 List<OutputModel> oOutputModel = new List<OutputModel>();
-                if (lvMainOutput.Items.Count > 0 && lvMainOutput != null)
+                if (ListViewMainOutput.Items.Count > 0 && ListViewMainOutput != null)
                 {
-                    foreach (ListViewItem item in lvMainOutput.Items)
+                    foreach (ListViewItem item in ListViewMainOutput.Items)
                     {
                         oOutputModel.Add(new OutputModel
                         {
@@ -113,7 +113,7 @@ namespace BulkAttachmentManagementPlugin
                     Message = "Exporting Data...",
                     Work = (Worker, args) =>
                     {
-                        lfsDAO.ExportResultsToCSV(oOutputModel, sfdCSVFile.FileName);
+                        lfsDAO.ExportResultsToCSV(oOutputModel, SaveFileDialogCsvFile.FileName);
                     }
                 });
             }
@@ -123,42 +123,42 @@ namespace BulkAttachmentManagementPlugin
         #region Radio Buttons
         private void rbAllAttachments_CheckedChanged(object sender, EventArgs e)
         {
-            if(rbAllAttachments.Checked)
+            if(RadioDownloadAll.Checked)
             {
                 lbCSVLocation.Text = @"Please choose the location to download attachments to";
-                tbCSVLocation.ReadOnly = false;
-                tbCSVLocation.Enabled = true;
-                butCSVBrowse.Enabled = true;
-                gbStep3.Enabled = false;
+                TextBoxCsvLocation.ReadOnly = false;
+                TextBoxCsvLocation.Enabled = true;
+                ButtonCsvBrowse.Enabled = true;
+                GroupStep3.Enabled = false;
             }
         }
 
         private void rbSpecificAttachments_CheckedChanged(object sender, EventArgs e)
         {
-            if (rbSpecificAttachments.Checked)
+            if (RadioDownloadSpecific.Checked)
             {
                 lbCSVLocation.Text = @"Please choose a location of CSV file.  Folder containing attachments will be downloaded to same folder as CSV file";
-                tbCSVLocation.ReadOnly = false;
-                tbCSVLocation.Enabled = true;
-                butCSVBrowse.Enabled = true;
-                gbStep3.Enabled = false;
+                TextBoxCsvLocation.ReadOnly = false;
+                TextBoxCsvLocation.Enabled = true;
+                ButtonCsvBrowse.Enabled = true;
+                GroupStep3.Enabled = false;
             }
         }
 
         private void Step1RadioButtons(object sender, EventArgs e)
         {
-            gbStep2.Enabled = true;
+            GroupStep2.Enabled = true;
         }
 
         private void rbReportOnly_CheckedChanged(object sender, EventArgs e)
         {
-            if(rbReportOnly.Checked)
+            if(RadioReportOnly.Checked)
             {
                 lbCSVLocation.Text = @"This option will ONLY report on the attachments.  Screen below will be populated and you can export the results";
-                tbCSVLocation.ReadOnly = false;
-                tbCSVLocation.Enabled = false;
-                butCSVBrowse.Enabled = false;
-                gbStep3.Enabled = true;
+                TextBoxCsvLocation.ReadOnly = false;
+                TextBoxCsvLocation.Enabled = false;
+                ButtonCsvBrowse.Enabled = false;
+                GroupStep3.Enabled = true;
             }
         }
 
@@ -170,24 +170,24 @@ namespace BulkAttachmentManagementPlugin
         private void PerformAction()
         {
             #region Download
-            if(!rbReportOnly.Checked)
+            if(!RadioReportOnly.Checked)
             {
                 #region Download Notes
-                if (rbNotes.Checked)
+                if (RadioNotes.Checked)
                 {
                     ProcessNotes();
                 }
                 #endregion
 
                 #region Download Emails
-                if (rbEMail.Checked)
+                if (RadioEmail.Checked)
                 {
                     ProcessEmails();
                 }
                 #endregion
 
                 #region Download Both
-                if (rbBoth.Checked)
+                if (RadioAll.Checked)
                 {
                     ProcessNotes();
                     ProcessEmails();
@@ -200,21 +200,21 @@ namespace BulkAttachmentManagementPlugin
             else
             {
                 #region Report Notes
-                if(rbNotes.Checked)
+                if(RadioNotes.Checked)
                 {
                     ReportNotes();
                 }
                 #endregion
 
                 #region Report E-Mails
-                if (rbEMail.Checked)
+                if (RadioEmail.Checked)
                 {
                     ReportEmails();
                 }
                 #endregion
 
                 #region Report Both
-                if (rbBoth.Checked)
+                if (RadioAll.Checked)
                 {
                     ReportNotes();
                     ReportEmails();
@@ -238,9 +238,9 @@ namespace BulkAttachmentManagementPlugin
                     CRMAttachmentDAO crmDAO = new CRMAttachmentDAO();
                     LocalFileSystemDAO localDAO = new LocalFileSystemDAO();
 
-                    List<Guid> oAttachmentGuids = rbAllAttachments.Checked ? crmDAO.GetListOfAttachments(Service) : localDAO.ReadFromCSV(tbCSVLocation.Text);
+                    List<Guid> oAttachmentGuids = RadioDownloadAll.Checked ? crmDAO.GetListOfAttachments(Service) : localDAO.ReadFromCSV(TextBoxCsvLocation.Text);
                     recordCount = oAttachmentGuids.Count;
-                    string fileDirectory = rbAllAttachments.Checked ? localDAO.CreateLocalDirectory(tbCSVLocation.Text, false, false, false) : localDAO.CreateLocalDirectory(tbCSVLocation.Text, false, true, false);
+                    string fileDirectory = RadioDownloadAll.Checked ? localDAO.CreateLocalDirectory(TextBoxCsvLocation.Text, false, false, false) : localDAO.CreateLocalDirectory(TextBoxCsvLocation.Text, false, true, false);
                     foreach (Guid attachment in oAttachmentGuids)
                     {
                         try
@@ -298,7 +298,7 @@ namespace BulkAttachmentManagementPlugin
                     }
                     else
                     {
-                        lvMainOutput.Items.Add((ListViewItem)pc.UserState);
+                        ListViewMainOutput.Items.Add((ListViewItem)pc.UserState);
                     }
                 }
             });
@@ -317,9 +317,9 @@ namespace BulkAttachmentManagementPlugin
                     CRMAttachmentDAO crmDAO = new CRMAttachmentDAO();
                     LocalFileSystemDAO localDAO = new LocalFileSystemDAO();
 
-                    List<Guid> oAttachmentGuids = rbAllAttachments.Checked ? crmDAO.GetListOfActivityMimeAttachmentGuids(Service) : localDAO.ReadFromCSV(tbCSVLocation.Text);
+                    List<Guid> oAttachmentGuids = RadioDownloadAll.Checked ? crmDAO.GetListOfActivityMimeAttachmentGuids(Service) : localDAO.ReadFromCSV(TextBoxCsvLocation.Text);
                     recordCount = oAttachmentGuids.Count;
-                    string fileDirectory = rbAllAttachments.Checked ? localDAO.CreateLocalDirectory(tbCSVLocation.Text, false, false, true) : localDAO.CreateLocalDirectory(tbCSVLocation.Text, false, true, true);
+                    string fileDirectory = RadioDownloadAll.Checked ? localDAO.CreateLocalDirectory(TextBoxCsvLocation.Text, false, false, true) : localDAO.CreateLocalDirectory(TextBoxCsvLocation.Text, false, true, true);
                     foreach (Guid attachment in oAttachmentGuids)
                     {
                         try
@@ -378,7 +378,7 @@ namespace BulkAttachmentManagementPlugin
                     }
                     else
                     {
-                        lvMainOutput.Items.Add((ListViewItem)pc.UserState);
+                        ListViewMainOutput.Items.Add((ListViewItem)pc.UserState);
                     }
                 }
             });
@@ -433,7 +433,7 @@ namespace BulkAttachmentManagementPlugin
                 },
                 ProgressChanged = pc =>
                 {
-                    lvMainOutput.Items.Add((ListViewItem)pc.UserState);
+                    ListViewMainOutput.Items.Add((ListViewItem)pc.UserState);
                 }
             });
         }
@@ -486,7 +486,7 @@ namespace BulkAttachmentManagementPlugin
                 },
                 ProgressChanged = pc =>
                 {
-                    lvMainOutput.Items.Add((ListViewItem)pc.UserState);
+                    ListViewMainOutput.Items.Add((ListViewItem)pc.UserState);
                 }
             });
         }
