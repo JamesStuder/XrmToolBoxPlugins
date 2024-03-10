@@ -8,5 +8,6 @@
         public const string FileSize = "filesize";
         public const string ObjectId = "objectid";
         public const string ObjectTypeCode = "objecttypecode";
+        public const string DocumentBody = "documentbody";
     }
 }
