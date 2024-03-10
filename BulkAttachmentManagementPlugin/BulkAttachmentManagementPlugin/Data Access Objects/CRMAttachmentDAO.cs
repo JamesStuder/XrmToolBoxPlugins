@@ -4,14 +4,16 @@ using Microsoft.Xrm.Sdk.Client;
 using Microsoft.Xrm.Sdk.Query;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using BulkAttachmentManagementPlugin.Constants;
 
 namespace BulkAttachmentManagementPlugin.Data_Access_Objects
 {
     public class CRMAttachmentDAO
     {
         /// <summary>
-        /// MEthod to get a list of notes that have an attachment
+        /// Method to get a list of notes that have an attachment
         /// </summary>
         /// <param name="service">CRM Service</param>
         /// <returns></returns>
@@ -19,7 +21,7 @@ namespace BulkAttachmentManagementPlugin.Data_Access_Objects
         {
             List<Guid> oAttachmentGuids = new List<Guid>();
             OrganizationServiceContext xrmContext = new OrganizationServiceContext(service);
-            oAttachmentGuids = xrmContext.CreateQuery("annotation").Where(n => n["filename"] != null).Select(n => Guid.Parse(n["annotationid"].ToString())).ToList();
+            oAttachmentGuids = xrmContext.CreateQuery(Annotation.EntityLogicalName).Where(n => n[Annotation.FileName] != null).Select(n => Guid.Parse(n[Annotation.PrimaryKey].ToString())).ToList();
             return oAttachmentGuids;
         }
 
@@ -32,7 +34,7 @@ namespace BulkAttachmentManagementPlugin.Data_Access_Objects
         public Entity GetNoteAttachmentData(Guid noteID, IOrganizationService service)
         {
             ColumnSet cols = new ColumnSet(true);
-            Entity annotation = new Entity("annotation");
+            Entity annotation = new Entity(Annotation.EntityLogicalName);
             annotation = service.Retrieve(annotation.LogicalName, noteID, cols);
             return annotation;
         }
@@ -46,7 +48,7 @@ namespace BulkAttachmentManagementPlugin.Data_Access_Objects
         {
             List<Guid> oMimeAttachments = new List<Guid>();
             OrganizationServiceContext xrmContext = new OrganizationServiceContext(service);
-            oMimeAttachments = xrmContext.CreateQuery("activitymimeattachment").Where(e => e["filename"] != null).Select(e => Guid.Parse(e["activitymimeattachmentid"].ToString())).ToList();
+            oMimeAttachments = xrmContext.CreateQuery(ActivityMimeAttachment.EntityLogicalName).Where(e => e[ActivityMimeAttachment.FileName] != null).Select(e => Guid.Parse(e[ActivityMimeAttachment.PrimaryKey].ToString())).ToList();
             return oMimeAttachments;
         }
 
@@ -59,8 +61,8 @@ namespace BulkAttachmentManagementPlugin.Data_Access_Objects
         public Entity GetActivityMimeAttachmentData(Guid mimeID, IOrganizationService service)
         {
             ColumnSet cols = new ColumnSet(true);
-            Entity activityMimeAttachment = new Entity("activitymimeattachment");
-            activityMimeAttachment = service.Retrieve(activityMimeAttachment.LogicalName, mimeID, cols);
+            Entity activityMimeAttachment = new Entity(ActivityMimeAttachment.EntityLogicalName);
+            activityMimeAttachment = service.Retrieve(ActivityMimeAttachment.EntityLogicalName, mimeID, cols);
             return activityMimeAttachment;
         }
 
@@ -74,17 +76,17 @@ namespace BulkAttachmentManagementPlugin.Data_Access_Objects
             List<OutputModel> oNotes = new List<OutputModel>();
             OrganizationServiceContext xrmContext = new OrganizationServiceContext(service);
 
-            oNotes = (from n in xrmContext.CreateQuery("annotation")
-                      where n["filename"] != null
+            oNotes = (from n in xrmContext.CreateQuery(Annotation.EntityLogicalName)
+                      where n[Annotation.FileName] != null
                       select new OutputModel
                       {
-                          DateTimeProcessed = DateTime.Now.ToString(),
-                          GUID = n["annotationid"].ToString(),
-                          FileName = n["filename"].ToString(),
-                          FileSize = n["filesize"].ToString(),
-                          DownloadLocation = "Report Only",
-                          RegardingEntity = n["objecttypecode"].ToString(),
-                          RegardingID = ((EntityReference)n["objectid"]).Id.ToString()
+                          DateTimeProcessed = DateTime.Now.ToString(CultureInfo.InvariantCulture),
+                          GUID = n[Annotation.PrimaryKey].ToString(),
+                          FileName = n[Annotation.FileName].ToString(),
+                          FileSize = n[Annotation.FileSize].ToString(),
+                          DownloadLocation = PluginConstants.ReportsOnlyDownloadLocation,
+                          RegardingEntity = n[Annotation.ObjectTypeCode].ToString(),
+                          RegardingID = ((EntityReference)n[Annotation.ObjectId]).Id.ToString()
                       }).ToList();
 
             return oNotes;
@@ -100,17 +102,17 @@ namespace BulkAttachmentManagementPlugin.Data_Access_Objects
             List<OutputModel> oMimeAttachments = new List<OutputModel>();
             OrganizationServiceContext xrmContext = new OrganizationServiceContext(service);
 
-            oMimeAttachments = (from e in xrmContext.CreateQuery("activitymimeattachment")
-                                where e["filename"] != null
+            oMimeAttachments = (from e in xrmContext.CreateQuery(ActivityMimeAttachment.EntityLogicalName)
+                                where e[ActivityMimeAttachment.FileName] != null
                                 select new OutputModel
                                 {
-                                    DateTimeProcessed = DateTime.Now.ToString(),
-                                    GUID = e["activitymimeattachmentid"].ToString(),
-                                    FileName = e["filename"].ToString(),
-                                    FileSize = e["filesize"].ToString(),
-                                    DownloadLocation = "Report Only",
-                                    RegardingEntity = e["objecttypecode"].ToString(),
-                                    RegardingID = ((EntityReference)e["objectid"]).Id.ToString()
+                                    DateTimeProcessed = DateTime.Now.ToString(CultureInfo.InvariantCulture),
+                                    GUID = e[ActivityMimeAttachment.PrimaryKey].ToString(),
+                                    FileName = e[ActivityMimeAttachment.FileName].ToString(),
+                                    FileSize = e[ActivityMimeAttachment.FileSize].ToString(),
+                                    DownloadLocation = PluginConstants.ReportsOnlyDownloadLocation,
+                                    RegardingEntity = e[ActivityMimeAttachment.ObjectTypeCode].ToString(),
+                                    RegardingID = ((EntityReference)e[ActivityMimeAttachment.ObjectId]).Id.ToString()
                                 }).ToList();
 
             return oMimeAttachments;

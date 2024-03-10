@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BulkAttachmentManagementPlugin</RootNamespace>
     <AssemblyName>BulkAttachmentManagementPlugin</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -108,6 +108,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AttachmentManagementPlugin.cs" />
+    <Compile Include="Constants\ActivityMimeAttachment.cs" />
+    <Compile Include="Constants\Annotation.cs" />
+    <Compile Include="Constants\PluginConstants.cs" />
     <Compile Include="Data Access Objects\CRMAttachmentDAO.cs" />
     <Compile Include="Data Access Objects\LocalFileSystemDAO.cs" />
     <Compile Include="Models\OutputModel.cs" />
@@ -129,7 +132,6 @@
       <DependentUpon>PluginControl.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Content Include="Images\PaperClip32x32.png" />
     <Content Include="Images\paperclip64x64.png" />
