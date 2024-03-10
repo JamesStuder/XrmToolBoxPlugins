@@ -30,7 +30,7 @@
         {
             this.GroupStep2 = new System.Windows.Forms.GroupBox();
             this.RadioReportOnly = new System.Windows.Forms.RadioButton();
-            this.lbCSVLocation = new System.Windows.Forms.Label();
+            this.LabelCsvLocation = new System.Windows.Forms.Label();
             this.RadioDownloadSpecific = new System.Windows.Forms.RadioButton();
             this.RadioDownloadAll = new System.Windows.Forms.RadioButton();
             this.ButtonCsvBrowse = new System.Windows.Forms.Button();
@@ -66,7 +66,7 @@
             // GroupStep2
             // 
             this.GroupStep2.Controls.Add(this.RadioReportOnly);
-            this.GroupStep2.Controls.Add(this.lbCSVLocation);
+            this.GroupStep2.Controls.Add(this.LabelCsvLocation);
             this.GroupStep2.Controls.Add(this.RadioDownloadSpecific);
             this.GroupStep2.Controls.Add(this.RadioDownloadAll);
             this.GroupStep2.Controls.Add(this.ButtonCsvBrowse);
@@ -92,11 +92,11 @@
             // 
             // lbCSVLocation
             // 
-            this.lbCSVLocation.AutoSize = true;
-            this.lbCSVLocation.Location = new System.Drawing.Point(7, 44);
-            this.lbCSVLocation.Name = "lbCSVLocation";
-            this.lbCSVLocation.Size = new System.Drawing.Size(0, 13);
-            this.lbCSVLocation.TabIndex = 4;
+            this.LabelCsvLocation.AutoSize = true;
+            this.LabelCsvLocation.Location = new System.Drawing.Point(7, 44);
+            this.LabelCsvLocation.Name = "LabelCsvLocation";
+            this.LabelCsvLocation.Size = new System.Drawing.Size(0, 13);
+            this.LabelCsvLocation.TabIndex = 4;
             // 
             // RadioDownloadSpecific
             // 
@@ -361,7 +361,7 @@
         private System.Windows.Forms.RadioButton RadioDownloadSpecific;
         private System.Windows.Forms.RadioButton RadioDownloadAll;
         private System.Windows.Forms.FolderBrowserDialog FolderBrowserDialogMainFile;
-        private System.Windows.Forms.Label lbCSVLocation;
+        private System.Windows.Forms.Label LabelCsvLocation;
         private System.Windows.Forms.ColumnHeader chRegardingEntity;
         private System.Windows.Forms.ColumnHeader chRegardID;
         private System.Windows.Forms.GroupBox GroupStep1;

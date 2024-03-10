@@ -28,9 +28,6 @@ namespace BulkAttachmentManagementPlugin
         #region Help Info
         public string HelpUrl => "https://github.com/medicstuder/XrmToolBoxPlugins/wiki";
         #endregion
-
-        private int _recordCount;
-        private int _loopCounter = 1;
         
         public PluginControl()
         {
@@ -137,7 +134,7 @@ namespace BulkAttachmentManagementPlugin
                 return;
             }
             
-            lbCSVLocation.Text = @"Please choose the location to download attachments to";
+            LabelCsvLocation.Text = @"Please choose the location to download attachments to";
             TextBoxCsvLocation.ReadOnly = false;
             TextBoxCsvLocation.Enabled = true;
             ButtonCsvBrowse.Enabled = true;
@@ -151,7 +148,7 @@ namespace BulkAttachmentManagementPlugin
                 return;
             }
             
-            lbCSVLocation.Text = @"Please choose a location of CSV file.  Folder containing attachments will be downloaded to same folder as CSV file";
+            LabelCsvLocation.Text = @"Please choose a location of CSV file.  Folder containing attachments will be downloaded to same folder as CSV file";
             TextBoxCsvLocation.ReadOnly = false;
             TextBoxCsvLocation.Enabled = true;
             ButtonCsvBrowse.Enabled = true;
@@ -165,7 +162,7 @@ namespace BulkAttachmentManagementPlugin
                 return;
             }
             
-            lbCSVLocation.Text = @"This option will ONLY report on the attachments.  Screen below will be populated and you can export the results";
+            LabelCsvLocation.Text = @"This option will ONLY report on the attachments.  Screen below will be populated and you can export the results";
             TextBoxCsvLocation.ReadOnly = false;
             TextBoxCsvLocation.Enabled = false;
             ButtonCsvBrowse.Enabled = false;
@@ -226,8 +223,7 @@ namespace BulkAttachmentManagementPlugin
 
         }
 
-
-
+        #region Process Downloads
         private void ProcessNotes()
         {
             WorkAsync(new WorkAsyncInfo
@@ -242,21 +238,24 @@ namespace BulkAttachmentManagementPlugin
                     LocalFileSystemDAO localDao = new LocalFileSystemDAO();
 
                     List<Guid> oAttachmentGuids = RadioDownloadAll.Checked ? crmDao.GetListOfAttachments(Service) : localDao.ReadFromCSV(TextBoxCsvLocation.Text);
-                    _recordCount = oAttachmentGuids.Count;
                     string fileDirectory = RadioDownloadAll.Checked ? localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, false, false) : localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, true, false);
-                    foreach (Guid attachment in oAttachmentGuids)
+                    for (int index = 0; index < oAttachmentGuids.Count; index++)
                     {
+                        string processingMessage = $"Processing {index} of {oAttachmentGuids.Count}";
+                        int progressPercentage = (int)(index / (float)oAttachmentGuids.Count * 100);
+                        
+                        ListViewItem listViewItem = new ListViewItem(DateTime.Now.ToString(CultureInfo.InvariantCulture));
+                        Guid attachment = oAttachmentGuids[index];
                         try
                         {
                             oNoteData = null;
                             storeAttachmentDirectory = null;
                             oNoteData = crmDao.GetNoteAttachmentData(attachment, Service);
-                            if(oNoteData[Annotation.FileSize].ToString() != "0")
+                            if (oNoteData != null && oNoteData[Annotation.FileSize].ToString() != "0")
                             {
                                 storeAttachmentDirectory = localDao.CreateLocalDirectory(Path.Combine(fileDirectory, oNoteData.Id.ToString()), true, false, false);
                                 localDao.CreateAttachmentFile(oNoteData[Annotation.DocumentBody].ToString(), storeAttachmentDirectory, oNoteData[Annotation.FileName].ToString());
 
-                                ListViewItem listViewItem = new ListViewItem(DateTime.Now.ToString(CultureInfo.InvariantCulture));
                                 listViewItem.SubItems.Add(oNoteData[Annotation.PrimaryKey].ToString());
                                 listViewItem.SubItems.Add(oNoteData[Annotation.FileName].ToString());
                                 listViewItem.SubItems.Add(oNoteData[Annotation.FileSize].ToString());
@@ -264,19 +263,10 @@ namespace BulkAttachmentManagementPlugin
                                 listViewItem.SubItems.Add(oNoteData[Annotation.ObjectTypeCode].ToString());
                                 listViewItem.SubItems.Add(((EntityReference)oNoteData[Annotation.ObjectId]).Id.ToString());
                                 listViewItem.SubItems.Add("");
-
-                                worker.ReportProgress(0, listViewItem);
-                                worker.ReportProgress(1);
-                                _loopCounter++;
-                            }
-                            else
-                            {
-                                throw new Exception("File size is 0.");
                             }
                         }
                         catch (Exception ex)
                         {
-                            ListViewItem listViewItem = new ListViewItem(DateTime.Now.ToString(CultureInfo.InvariantCulture));
                             if (oNoteData != null)
                             {
                                 listViewItem.SubItems.Add(oNoteData[Annotation.PrimaryKey].ToString());
@@ -285,24 +275,20 @@ namespace BulkAttachmentManagementPlugin
                                 listViewItem.SubItems.Add(storeAttachmentDirectory);
                                 listViewItem.SubItems.Add(oNoteData[Annotation.ObjectTypeCode].ToString());
                                 listViewItem.SubItems.Add(((EntityReference)oNoteData[Annotation.ObjectId]).Id.ToString());
+                                listViewItem.SubItems.Add(ex.Message);
                             }
-
-                            listViewItem.SubItems.Add(ex.Message);
-
-                            worker.ReportProgress(0, listViewItem);
+                            
                         }
+                        worker.ReportProgress(progressPercentage, processingMessage);
+                        ListViewMainOutput.Invoke(new Action(() =>
+                        {
+                            ListViewMainOutput.Items.Add(listViewItem);
+                        }));
                     }
                 },
-                ProgressChanged = pc =>
+                ProgressChanged = args =>
                 {
-                    if (pc.ProgressPercentage == 1)
-                    {
-                        SetWorkingMessage($"Processing Notes: {_loopCounter} of {_recordCount}");
-                    }
-                    else
-                    {
-                        ListViewMainOutput.Items.Add((ListViewItem)pc.UserState);
-                    }
+                    SetWorkingMessage($"{args.ProgressPercentage} Completed.  {args.UserState}");
                 }
             });
         }
@@ -321,10 +307,15 @@ namespace BulkAttachmentManagementPlugin
                     LocalFileSystemDAO localDao = new LocalFileSystemDAO();
 
                     List<Guid> oAttachmentGuids = RadioDownloadAll.Checked ? crmDao.GetListOfActivityMimeAttachmentGuids(Service) : localDao.ReadFromCSV(TextBoxCsvLocation.Text);
-                    _recordCount = oAttachmentGuids.Count;
+                    
                     string fileDirectory = RadioDownloadAll.Checked ? localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, false, true) : localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, true, true);
-                    foreach (Guid attachment in oAttachmentGuids)
+                    for (int index = 0; index < oAttachmentGuids.Count; index++)
                     {
+                        string processingMessage = $"Processing {index} of {oAttachmentGuids.Count}";
+                        int progressPercentage = (int)(index / (float)oAttachmentGuids.Count * 100);
+
+                        ListViewItem listViewItem = new ListViewItem(DateTime.Now.ToString(CultureInfo.InvariantCulture));
+                        Guid attachment = oAttachmentGuids[index];
                         try
                         {
                             oEMailData = null;
@@ -336,7 +327,6 @@ namespace BulkAttachmentManagementPlugin
                                 storeAttachmentDirectory = localDao.CreateLocalDirectory(Path.Combine(fileDirectory, oEMailData.Id.ToString()), true, false, true);
                                 localDao.CreateAttachmentFile(oEMailData[ActivityMimeAttachment.Body].ToString(), storeAttachmentDirectory, oEMailData[ActivityMimeAttachment.FileName].ToString());
 
-                                ListViewItem listViewItem = new ListViewItem(DateTime.Now.ToString(CultureInfo.InvariantCulture));
                                 listViewItem.SubItems.Add(oEMailData[ActivityMimeAttachment.PrimaryKey].ToString());
                                 listViewItem.SubItems.Add(oEMailData[ActivityMimeAttachment.FileName].ToString());
                                 listViewItem.SubItems.Add(oEMailData[ActivityMimeAttachment.FileSize].ToString());
@@ -344,19 +334,10 @@ namespace BulkAttachmentManagementPlugin
                                 listViewItem.SubItems.Add(oEMailData[ActivityMimeAttachment.ObjectTypeCode].ToString());
                                 listViewItem.SubItems.Add(((EntityReference)oEMailData[ActivityMimeAttachment.ObjectId]).Id.ToString());
                                 listViewItem.SubItems.Add("");
-
-                                worker.ReportProgress(0, listViewItem);
-                                worker.ReportProgress(1);
-                                _loopCounter++;
-                            }
-                            else
-                            {
-                                throw new Exception("File size is 0.");
                             }
                         }
                         catch (Exception ex)
                         {
-                            ListViewItem listViewItem = new ListViewItem(DateTime.Now.ToString(CultureInfo.InvariantCulture));
                             if (oEMailData != null)
                             {
                                 listViewItem.SubItems.Add(oEMailData[ActivityMimeAttachment.PrimaryKey].ToString());
@@ -365,24 +346,19 @@ namespace BulkAttachmentManagementPlugin
                                 listViewItem.SubItems.Add(storeAttachmentDirectory);
                                 listViewItem.SubItems.Add(oEMailData[ActivityMimeAttachment.ObjectTypeCode].ToString());
                                 listViewItem.SubItems.Add(((EntityReference)oEMailData[ActivityMimeAttachment.ObjectId]).Id.ToString());
+                                listViewItem.SubItems.Add(ex.Message);
                             }
-
-                            listViewItem.SubItems.Add(ex.Message);
-
-                            worker.ReportProgress(0, listViewItem);
                         }
+                        worker.ReportProgress(progressPercentage, processingMessage);
+                        ListViewMainOutput.Invoke(new Action(() =>
+                        {
+                            ListViewMainOutput.Items.Add(listViewItem);
+                        }));
                     }
                 },
-                ProgressChanged = pc =>
+                ProgressChanged = args =>
                 {
-                    if (pc.ProgressPercentage == 1)
-                    {
-                        SetWorkingMessage($"Processing E-mails: {_loopCounter} of {_recordCount}");
-                    }
-                    else
-                    {
-                        ListViewMainOutput.Items.Add((ListViewItem)pc.UserState);
-                    }
+                    SetWorkingMessage($"{args.ProgressPercentage} Completed.  {args.UserState}");
                 }
             });
         }
@@ -401,10 +377,15 @@ namespace BulkAttachmentManagementPlugin
                     LocalFileSystemDAO localDao = new LocalFileSystemDAO();
 
                     List<Guid> oAttachmentGuids = RadioDownloadAll.Checked ? crmDao.GetListOfActivityMimeAttachmentGuids(Service) : localDao.ReadFromCSV(TextBoxCsvLocation.Text);
-                    _recordCount = oAttachmentGuids.Count;
+
                     string fileDirectory = RadioDownloadAll.Checked ? localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, false, true) : localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, true, true);
-                    foreach (Guid attachment in oAttachmentGuids)
+                    for (int index = 0; index < oAttachmentGuids.Count; index++)
                     {
+                        string processingMessage = $"Processing {index} of {oAttachmentGuids.Count}";
+                        int progressPercentage = (int)(index / (float)oAttachmentGuids.Count * 100);
+
+                        ListViewItem listViewItem = new ListViewItem(DateTime.Now.ToString(CultureInfo.InvariantCulture));
+                        Guid attachment = oAttachmentGuids[index];
                         try
                         {
                             oEMailData = null;
@@ -416,7 +397,6 @@ namespace BulkAttachmentManagementPlugin
                                 storeAttachmentDirectory = localDao.CreateLocalDirectory(Path.Combine(fileDirectory, oEMailData.Id.ToString()), true, false, true);
                                 localDao.CreateAttachmentFile(oEMailData[ActivityMimeAttachment.Body].ToString(), storeAttachmentDirectory, oEMailData[ActivityMimeAttachment.FileName].ToString());
 
-                                ListViewItem listViewItem = new ListViewItem(DateTime.Now.ToString(CultureInfo.InvariantCulture));
                                 listViewItem.SubItems.Add(oEMailData[ActivityMimeAttachment.PrimaryKey].ToString());
                                 listViewItem.SubItems.Add(oEMailData[ActivityMimeAttachment.FileName].ToString());
                                 listViewItem.SubItems.Add(oEMailData[ActivityMimeAttachment.FileSize].ToString());
@@ -424,19 +404,10 @@ namespace BulkAttachmentManagementPlugin
                                 listViewItem.SubItems.Add(oEMailData[ActivityMimeAttachment.ObjectTypeCode].ToString());
                                 listViewItem.SubItems.Add(((EntityReference)oEMailData[ActivityMimeAttachment.ObjectId]).Id.ToString());
                                 listViewItem.SubItems.Add("");
-
-                                worker.ReportProgress(0, listViewItem);
-                                worker.ReportProgress(1);
-                                _loopCounter++;
-                            }
-                            else
-                            {
-                                throw new Exception("File size is 0.");
                             }
                         }
                         catch (Exception ex)
                         {
-                            ListViewItem listViewItem = new ListViewItem(DateTime.Now.ToString(CultureInfo.InvariantCulture));
                             if (oEMailData != null)
                             {
                                 listViewItem.SubItems.Add(oEMailData[ActivityMimeAttachment.PrimaryKey].ToString());
@@ -445,31 +416,27 @@ namespace BulkAttachmentManagementPlugin
                                 listViewItem.SubItems.Add(storeAttachmentDirectory);
                                 listViewItem.SubItems.Add(oEMailData[ActivityMimeAttachment.ObjectTypeCode].ToString());
                                 listViewItem.SubItems.Add(((EntityReference)oEMailData[ActivityMimeAttachment.ObjectId]).Id.ToString());
+                                listViewItem.SubItems.Add(ex.Message);
                             }
-
-                            listViewItem.SubItems.Add(ex.Message);
-
-                            worker.ReportProgress(0, listViewItem);
                         }
+                        worker.ReportProgress(progressPercentage, processingMessage);
+                        ListViewMainOutput.Invoke(new Action(() =>
+                        {
+                            ListViewMainOutput.Items.Add(listViewItem);
+                        }));
                     }
                 },
-                ProgressChanged = pc =>
+                ProgressChanged = args =>
                 {
-                    if (pc.ProgressPercentage == 1)
-                    {
-                        SetWorkingMessage($"Processing E-mails: {_loopCounter} of {_recordCount}");
-                    }
-                    else
-                    {
-                        ListViewMainOutput.Items.Add((ListViewItem)pc.UserState);
-                    }
+                    SetWorkingMessage($"{args.ProgressPercentage} Completed.  {args.UserState}");
                 }
             });
         }
-        
+        #endregion
+
+        #region Process Reporting
         private void ReportNotes()
         {
-            OutputModel noteRecord = null;
             WorkAsync(new WorkAsyncInfo
             {
                 Message = "Processing...",
@@ -477,15 +444,17 @@ namespace BulkAttachmentManagementPlugin
                 {
 
                     CRMAttachmentDAO crmDao = new CRMAttachmentDAO();
-
                     List<OutputModel> oNoteData = crmDao.ReportNoteAttachments(Service);
 
-                    foreach (OutputModel note in oNoteData)
+                    for (int index = 0; index < oNoteData.Count; index++)
                     {
+                        string processingMessage = $"Processing {index} of {oNoteData.Count}";
+                        int progressPercentage = (int)(index / (float)oNoteData.Count * 100);
+                        OutputModel note = oNoteData[index];
+                        ListViewItem listViewItem = new ListViewItem(note.DateTimeProcessed);
+                        
                         try
                         {
-                            noteRecord = note;
-                            ListViewItem listViewItem = new ListViewItem(note.DateTimeProcessed);
                             listViewItem.SubItems.Add(note.GUID);
                             listViewItem.SubItems.Add(note.FileName);
                             listViewItem.SubItems.Add(note.FileSize);
@@ -493,52 +462,49 @@ namespace BulkAttachmentManagementPlugin
                             listViewItem.SubItems.Add(note.RegardingEntity);
                             listViewItem.SubItems.Add(note.RegardingID);
                             listViewItem.SubItems.Add("");
-
-                            worker.ReportProgress(0, listViewItem);
                         }
                         catch (Exception ex)
                         {
-                            if (noteRecord != null)
-                            {
-                                ListViewItem listViewItem = new ListViewItem(noteRecord.DateTimeProcessed);
-                                listViewItem.SubItems.Add(noteRecord.GUID);
-                                listViewItem.SubItems.Add(noteRecord.FileName);
-                                listViewItem.SubItems.Add(noteRecord.FileSize);
-                                listViewItem.SubItems.Add(noteRecord.DownloadLocation);
-                                listViewItem.SubItems.Add(noteRecord.RegardingEntity);
-                                listViewItem.SubItems.Add(noteRecord.RegardingID);
-                                listViewItem.SubItems.Add(ex.Message);
-
-                                worker.ReportProgress(0, listViewItem);
-                            }
+                            listViewItem.SubItems.Add(note.GUID);
+                            listViewItem.SubItems.Add(note.FileName);
+                            listViewItem.SubItems.Add(note.FileSize);
+                            listViewItem.SubItems.Add(note.DownloadLocation);
+                            listViewItem.SubItems.Add(note.RegardingEntity);
+                            listViewItem.SubItems.Add(note.RegardingID);
+                            listViewItem.SubItems.Add(ex.Message);
                         }
+                        worker.ReportProgress(progressPercentage, processingMessage);
+                        ListViewMainOutput.Invoke(new Action(() =>
+                        {
+                            ListViewMainOutput.Items.Add(listViewItem);
+                        }));
                     }
                 },
-                ProgressChanged = pc =>
+                ProgressChanged = args =>
                 {
-                    ListViewMainOutput.Items.Add((ListViewItem)pc.UserState);
+                    SetWorkingMessage($"{args.ProgressPercentage} Completed.  {args.UserState}");
                 }
             });
         }
 
         private void ReportEmails()
         {
-            OutputModel emailRecord = null;
             WorkAsync(new WorkAsyncInfo
             {
                 Message = "Processing...",
                 Work = (worker, args) =>
                 {
-                    try
+                    CRMAttachmentDAO crmDao = new CRMAttachmentDAO();
+                    List<OutputModel> oEmailData = crmDao.ReportMimeAttachments(Service);
+                    for (int index = 0; index < oEmailData.Count; index++)
                     {
-                        CRMAttachmentDAO crmDao = new CRMAttachmentDAO();
-
-                        List<OutputModel> oEmailData = crmDao.ReportMimeAttachments(Service);
-
-                        foreach (OutputModel email in oEmailData)
+                        string processingMessage = $"Processing {index} of {oEmailData.Count}";
+                        int progressPercentage = (int)(index / (float)oEmailData.Count * 100);
+                        OutputModel email = oEmailData[index];
+                        ListViewItem listViewItem = new ListViewItem(email.DateTimeProcessed);
+                        try
                         {
-                            emailRecord = email;
-                            ListViewItem listViewItem = new ListViewItem(email.DateTimeProcessed);
+                            
                             listViewItem.SubItems.Add(email.GUID);
                             listViewItem.SubItems.Add(email.FileName);
                             listViewItem.SubItems.Add(email.FileSize);
@@ -546,52 +512,49 @@ namespace BulkAttachmentManagementPlugin
                             listViewItem.SubItems.Add(email.RegardingEntity);
                             listViewItem.SubItems.Add(email.RegardingID);
                             listViewItem.SubItems.Add("");
-
-                            worker.ReportProgress(0, listViewItem);
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        if (emailRecord != null)
+                        catch (Exception ex)
                         {
-                            ListViewItem listViewItem = new ListViewItem(emailRecord.DateTimeProcessed);
-                            listViewItem.SubItems.Add(emailRecord.GUID);
-                            listViewItem.SubItems.Add(emailRecord.FileName);
-                            listViewItem.SubItems.Add(emailRecord.FileSize);
-                            listViewItem.SubItems.Add(emailRecord.DownloadLocation);
-                            listViewItem.SubItems.Add(emailRecord.RegardingEntity);
-                            listViewItem.SubItems.Add(emailRecord.RegardingID);
+                            listViewItem.SubItems.Add(email.GUID);
+                            listViewItem.SubItems.Add(email.FileName);
+                            listViewItem.SubItems.Add(email.FileSize);
+                            listViewItem.SubItems.Add(email.DownloadLocation);
+                            listViewItem.SubItems.Add(email.RegardingEntity);
+                            listViewItem.SubItems.Add(email.RegardingID);
                             listViewItem.SubItems.Add(ex.Message);
-
-                            worker.ReportProgress(0, listViewItem);
                         }
+                        worker.ReportProgress(progressPercentage, processingMessage);
+                        ListViewMainOutput.Invoke(new Action(() =>
+                        {
+                            ListViewMainOutput.Items.Add(listViewItem);
+                        }));
                     }
                 },
-                ProgressChanged = pc =>
+                ProgressChanged = args =>
                 {
-                    ListViewMainOutput.Items.Add((ListViewItem)pc.UserState);
+                    SetWorkingMessage($"{args.ProgressPercentage} Completed.  {args.UserState}");
                 }
             });
         }
 
         private void ReportFiles()
         {
-            OutputModel fileRecord = null;
             WorkAsync(new WorkAsyncInfo
             {
                 Message = "Processing...",
                 Work = (worker, args) =>
                 {
-                    try
+                    CRMAttachmentDAO crmDao = new CRMAttachmentDAO();
+                    List<OutputModel> oEmailData = crmDao.ReportMimeAttachments(Service);
+                    for (int index = 0; index < oEmailData.Count; index++)
                     {
-                        CRMAttachmentDAO crmDao = new CRMAttachmentDAO();
-
-                        List<OutputModel> oEmailData = crmDao.ReportMimeAttachments(Service);
-
-                        foreach (OutputModel email in oEmailData)
+                        string processingMessage = $"Processing {index} of {oEmailData.Count}";
+                        int progressPercentage = (int)(index / (float)oEmailData.Count * 100);
+                        OutputModel email = oEmailData[index];
+                        ListViewItem listViewItem = new ListViewItem(email.DateTimeProcessed);
+                        try
                         {
-                            fileRecord = email;
-                            ListViewItem listViewItem = new ListViewItem(email.DateTimeProcessed);
+
                             listViewItem.SubItems.Add(email.GUID);
                             listViewItem.SubItems.Add(email.FileName);
                             listViewItem.SubItems.Add(email.FileSize);
@@ -599,32 +562,30 @@ namespace BulkAttachmentManagementPlugin
                             listViewItem.SubItems.Add(email.RegardingEntity);
                             listViewItem.SubItems.Add(email.RegardingID);
                             listViewItem.SubItems.Add("");
-
-                            worker.ReportProgress(0, listViewItem);
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        if (fileRecord != null)
+                        catch (Exception ex)
                         {
-                            ListViewItem listViewItem = new ListViewItem(fileRecord.DateTimeProcessed);
-                            listViewItem.SubItems.Add(fileRecord.GUID);
-                            listViewItem.SubItems.Add(fileRecord.FileName);
-                            listViewItem.SubItems.Add(fileRecord.FileSize);
-                            listViewItem.SubItems.Add(fileRecord.DownloadLocation);
-                            listViewItem.SubItems.Add(fileRecord.RegardingEntity);
-                            listViewItem.SubItems.Add(fileRecord.RegardingID);
+                            listViewItem.SubItems.Add(email.GUID);
+                            listViewItem.SubItems.Add(email.FileName);
+                            listViewItem.SubItems.Add(email.FileSize);
+                            listViewItem.SubItems.Add(email.DownloadLocation);
+                            listViewItem.SubItems.Add(email.RegardingEntity);
+                            listViewItem.SubItems.Add(email.RegardingID);
                             listViewItem.SubItems.Add(ex.Message);
-
-                            worker.ReportProgress(0, listViewItem);
                         }
+                        worker.ReportProgress(progressPercentage, processingMessage);
+                        ListViewMainOutput.Invoke(new Action(() =>
+                        {
+                            ListViewMainOutput.Items.Add(listViewItem);
+                        }));
                     }
                 },
-                ProgressChanged = pc =>
+                ProgressChanged = args =>
                 {
-                    ListViewMainOutput.Items.Add((ListViewItem)pc.UserState);
+                    SetWorkingMessage($"{args.ProgressPercentage} Completed.  {args.UserState}");
                 }
             });
         }
+        #endregion
     }
 }
