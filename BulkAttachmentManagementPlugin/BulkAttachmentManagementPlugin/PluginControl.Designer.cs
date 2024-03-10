@@ -51,12 +51,12 @@
             this.SaveFileDialogCsvFile = new System.Windows.Forms.SaveFileDialog();
             this.FolderBrowserDialogMainFile = new System.Windows.Forms.FolderBrowserDialog();
             this.GroupStep1 = new System.Windows.Forms.GroupBox();
+            this.RadioFiles = new System.Windows.Forms.RadioButton();
             this.RadioAll = new System.Windows.Forms.RadioButton();
             this.RadioNotes = new System.Windows.Forms.RadioButton();
             this.RadioEmail = new System.Windows.Forms.RadioButton();
             this.GroupStep4 = new System.Windows.Forms.GroupBox();
             this.ButtonExport = new System.Windows.Forms.Button();
-            this.RabioFiles = new System.Windows.Forms.RadioButton();
             this.GroupStep2.SuspendLayout();
             this.GroupStep3.SuspendLayout();
             this.GroupStep1.SuspendLayout();
@@ -88,7 +88,7 @@
             this.RadioReportOnly.TabIndex = 5;
             this.RadioReportOnly.Text = "Report ONLY";
             this.RadioReportOnly.UseVisualStyleBackColor = true;
-            this.RadioReportOnly.CheckedChanged += new System.EventHandler(this.rbReportOnly_CheckedChanged);
+            this.RadioReportOnly.CheckedChanged += new System.EventHandler(this.RadioReportOnly_CheckedChanged);
             // 
             // lbCSVLocation
             // 
@@ -107,7 +107,7 @@
             this.RadioDownloadSpecific.TabIndex = 3;
             this.RadioDownloadSpecific.Text = "Specific Attachments";
             this.RadioDownloadSpecific.UseVisualStyleBackColor = true;
-            this.RadioDownloadSpecific.CheckedChanged += new System.EventHandler(this.rbSpecificAttachments_CheckedChanged);
+            this.RadioDownloadSpecific.CheckedChanged += new System.EventHandler(this.RadioDownloadSpecific_CheckedChanged);
             // 
             // RadioDownloadAll
             // 
@@ -118,7 +118,7 @@
             this.RadioDownloadAll.TabIndex = 2;
             this.RadioDownloadAll.Text = "All Attachments";
             this.RadioDownloadAll.UseVisualStyleBackColor = true;
-            this.RadioDownloadAll.CheckedChanged += new System.EventHandler(this.rbAllAttachments_CheckedChanged);
+            this.RadioDownloadAll.CheckedChanged += new System.EventHandler(this.RadioDownloadAll_CheckedChanged);
             // 
             // ButtonCsvBrowse
             // 
@@ -129,7 +129,7 @@
             this.ButtonCsvBrowse.TabIndex = 1;
             this.ButtonCsvBrowse.Text = "Browse";
             this.ButtonCsvBrowse.UseVisualStyleBackColor = true;
-            this.ButtonCsvBrowse.Click += new System.EventHandler(this.butCSVBrowse_Click);
+            this.ButtonCsvBrowse.Click += new System.EventHandler(this.ButtonCsvBrowse_Click);
             // 
             // TextBoxCsvLocation
             // 
@@ -159,7 +159,7 @@
             this.ButtonRun.TabIndex = 0;
             this.ButtonRun.Text = "Run";
             this.ButtonRun.UseVisualStyleBackColor = true;
-            this.ButtonRun.Click += new System.EventHandler(this.butRun_Click);
+            this.ButtonRun.Click += new System.EventHandler(this.ButtonRun_Click);
             // 
             // ListViewMainOutput
             // 
@@ -241,7 +241,7 @@
             // 
             // GroupStep1
             // 
-            this.GroupStep1.Controls.Add(this.RabioFiles);
+            this.GroupStep1.Controls.Add(this.RadioFiles);
             this.GroupStep1.Controls.Add(this.RadioAll);
             this.GroupStep1.Controls.Add(this.RadioNotes);
             this.GroupStep1.Controls.Add(this.RadioEmail);
@@ -251,6 +251,18 @@
             this.GroupStep1.TabIndex = 8;
             this.GroupStep1.TabStop = false;
             this.GroupStep1.Text = "Step 1: (Choose One)";
+            // 
+            // RadioFiles
+            // 
+            this.RadioFiles.AutoSize = true;
+            this.RadioFiles.Location = new System.Drawing.Point(5, 67);
+            this.RadioFiles.Name = "RadioFiles";
+            this.RadioFiles.Size = new System.Drawing.Size(46, 17);
+            this.RadioFiles.TabIndex = 3;
+            this.RadioFiles.TabStop = true;
+            this.RadioFiles.Text = "Files";
+            this.RadioFiles.UseVisualStyleBackColor = true;
+            this.RadioFiles.CheckedChanged += new System.EventHandler(this.Step1RadioButtons);
             // 
             // RadioAll
             // 
@@ -306,19 +318,7 @@
             this.ButtonExport.TabIndex = 8;
             this.ButtonExport.Text = "Export Results";
             this.ButtonExport.UseVisualStyleBackColor = true;
-            this.ButtonExport.Click += new System.EventHandler(this.butExport_Click);
-            // 
-            // RabioFiles
-            // 
-            this.RabioFiles.AutoSize = true;
-            this.RabioFiles.Location = new System.Drawing.Point(5, 67);
-            this.RabioFiles.Name = "RabioFiles";
-            this.RabioFiles.Size = new System.Drawing.Size(46, 17);
-            this.RabioFiles.TabIndex = 3;
-            this.RabioFiles.TabStop = true;
-            this.RabioFiles.Text = "Files";
-            this.RabioFiles.UseVisualStyleBackColor = true;
-            this.RabioFiles.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
+            this.ButtonExport.Click += new System.EventHandler(this.ButtonExport_Click);
             // 
             // PluginControl
             // 
@@ -372,6 +372,6 @@
         private System.Windows.Forms.Button ButtonExport;
         private System.Windows.Forms.RadioButton RadioReportOnly;
         private System.Windows.Forms.ColumnHeader chFileSize;
-        private System.Windows.Forms.RadioButton RabioFiles;
+        private System.Windows.Forms.RadioButton RadioFiles;
     }
 }
