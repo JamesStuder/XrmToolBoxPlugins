@@ -389,7 +389,82 @@ namespace BulkAttachmentManagementPlugin
 
         private void ProcessFiles()
         {
-            throw new NotImplementedException();
+            WorkAsync(new WorkAsyncInfo()
+            {
+                Message = "Processing...",
+                Work = (worker, args) =>
+                {
+                    Entity oEMailData = new Entity();
+                    string storeAttachmentDirectory = null;
+
+                    CRMAttachmentDAO crmDao = new CRMAttachmentDAO();
+                    LocalFileSystemDAO localDao = new LocalFileSystemDAO();
+
+                    List<Guid> oAttachmentGuids = RadioDownloadAll.Checked ? crmDao.GetListOfActivityMimeAttachmentGuids(Service) : localDao.ReadFromCSV(TextBoxCsvLocation.Text);
+                    _recordCount = oAttachmentGuids.Count;
+                    string fileDirectory = RadioDownloadAll.Checked ? localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, false, true) : localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, true, true);
+                    foreach (Guid attachment in oAttachmentGuids)
+                    {
+                        try
+                        {
+                            oEMailData = null;
+                            storeAttachmentDirectory = null;
+                            oEMailData = crmDao.GetActivityMimeAttachmentData(attachment, Service);
+
+                            if (oEMailData[ActivityMimeAttachment.FileSize].ToString() != "0")
+                            {
+                                storeAttachmentDirectory = localDao.CreateLocalDirectory(Path.Combine(fileDirectory, oEMailData.Id.ToString()), true, false, true);
+                                localDao.CreateAttachmentFile(oEMailData[ActivityMimeAttachment.Body].ToString(), storeAttachmentDirectory, oEMailData[ActivityMimeAttachment.FileName].ToString());
+
+                                ListViewItem listViewItem = new ListViewItem(DateTime.Now.ToString(CultureInfo.InvariantCulture));
+                                listViewItem.SubItems.Add(oEMailData[ActivityMimeAttachment.PrimaryKey].ToString());
+                                listViewItem.SubItems.Add(oEMailData[ActivityMimeAttachment.FileName].ToString());
+                                listViewItem.SubItems.Add(oEMailData[ActivityMimeAttachment.FileSize].ToString());
+                                listViewItem.SubItems.Add(storeAttachmentDirectory);
+                                listViewItem.SubItems.Add(oEMailData[ActivityMimeAttachment.ObjectTypeCode].ToString());
+                                listViewItem.SubItems.Add(((EntityReference)oEMailData[ActivityMimeAttachment.ObjectId]).Id.ToString());
+                                listViewItem.SubItems.Add("");
+
+                                worker.ReportProgress(0, listViewItem);
+                                worker.ReportProgress(1);
+                                _loopCounter++;
+                            }
+                            else
+                            {
+                                throw new Exception("File size is 0.");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            ListViewItem listViewItem = new ListViewItem(DateTime.Now.ToString(CultureInfo.InvariantCulture));
+                            if (oEMailData != null)
+                            {
+                                listViewItem.SubItems.Add(oEMailData[ActivityMimeAttachment.PrimaryKey].ToString());
+                                listViewItem.SubItems.Add(oEMailData[ActivityMimeAttachment.FileName].ToString());
+                                listViewItem.SubItems.Add(oEMailData[ActivityMimeAttachment.FileSize].ToString());
+                                listViewItem.SubItems.Add(storeAttachmentDirectory);
+                                listViewItem.SubItems.Add(oEMailData[ActivityMimeAttachment.ObjectTypeCode].ToString());
+                                listViewItem.SubItems.Add(((EntityReference)oEMailData[ActivityMimeAttachment.ObjectId]).Id.ToString());
+                            }
+
+                            listViewItem.SubItems.Add(ex.Message);
+
+                            worker.ReportProgress(0, listViewItem);
+                        }
+                    }
+                },
+                ProgressChanged = pc =>
+                {
+                    if (pc.ProgressPercentage == 1)
+                    {
+                        SetWorkingMessage($"Processing E-mails: {_loopCounter} of {_recordCount}");
+                    }
+                    else
+                    {
+                        ListViewMainOutput.Items.Add((ListViewItem)pc.UserState);
+                    }
+                }
+            });
         }
         
         private void ReportNotes()
@@ -501,7 +576,55 @@ namespace BulkAttachmentManagementPlugin
 
         private void ReportFiles()
         {
-            
+            OutputModel fileRecord = null;
+            WorkAsync(new WorkAsyncInfo
+            {
+                Message = "Processing...",
+                Work = (worker, args) =>
+                {
+                    try
+                    {
+                        CRMAttachmentDAO crmDao = new CRMAttachmentDAO();
+
+                        List<OutputModel> oEmailData = crmDao.ReportMimeAttachments(Service);
+
+                        foreach (OutputModel email in oEmailData)
+                        {
+                            fileRecord = email;
+                            ListViewItem listViewItem = new ListViewItem(email.DateTimeProcessed);
+                            listViewItem.SubItems.Add(email.GUID);
+                            listViewItem.SubItems.Add(email.FileName);
+                            listViewItem.SubItems.Add(email.FileSize);
+                            listViewItem.SubItems.Add(email.DownloadLocation);
+                            listViewItem.SubItems.Add(email.RegardingEntity);
+                            listViewItem.SubItems.Add(email.RegardingID);
+                            listViewItem.SubItems.Add("");
+
+                            worker.ReportProgress(0, listViewItem);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        if (fileRecord != null)
+                        {
+                            ListViewItem listViewItem = new ListViewItem(fileRecord.DateTimeProcessed);
+                            listViewItem.SubItems.Add(fileRecord.GUID);
+                            listViewItem.SubItems.Add(fileRecord.FileName);
+                            listViewItem.SubItems.Add(fileRecord.FileSize);
+                            listViewItem.SubItems.Add(fileRecord.DownloadLocation);
+                            listViewItem.SubItems.Add(fileRecord.RegardingEntity);
+                            listViewItem.SubItems.Add(fileRecord.RegardingID);
+                            listViewItem.SubItems.Add(ex.Message);
+
+                            worker.ReportProgress(0, listViewItem);
+                        }
+                    }
+                },
+                ProgressChanged = pc =>
+                {
+                    ListViewMainOutput.Items.Add((ListViewItem)pc.UserState);
+                }
+            });
         }
     }
 }
