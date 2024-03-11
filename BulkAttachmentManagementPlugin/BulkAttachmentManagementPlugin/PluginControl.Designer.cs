@@ -57,6 +57,7 @@
             this.RadioEmail = new System.Windows.Forms.RadioButton();
             this.GroupStep4 = new System.Windows.Forms.GroupBox();
             this.ButtonExport = new System.Windows.Forms.Button();
+            this.ButtonReset = new System.Windows.Forms.Button();
             this.GroupStep2.SuspendLayout();
             this.GroupStep3.SuspendLayout();
             this.GroupStep1.SuspendLayout();
@@ -90,7 +91,7 @@
             this.RadioReportOnly.UseVisualStyleBackColor = true;
             this.RadioReportOnly.CheckedChanged += new System.EventHandler(this.RadioReportOnly_CheckedChanged);
             // 
-            // lbCSVLocation
+            // LabelCsvLocation
             // 
             this.LabelCsvLocation.AutoSize = true;
             this.LabelCsvLocation.Location = new System.Drawing.Point(7, 44);
@@ -320,10 +321,21 @@
             this.ButtonExport.UseVisualStyleBackColor = true;
             this.ButtonExport.Click += new System.EventHandler(this.ButtonExport_Click);
             // 
+            // ButtonReset
+            // 
+            this.ButtonReset.Location = new System.Drawing.Point(1135, 118);
+            this.ButtonReset.Name = "ButtonReset";
+            this.ButtonReset.Size = new System.Drawing.Size(75, 23);
+            this.ButtonReset.TabIndex = 10;
+            this.ButtonReset.Text = "Reset";
+            this.ButtonReset.UseVisualStyleBackColor = true;
+            this.ButtonReset.Click += new System.EventHandler(this.ButtonReset_Click);
+            // 
             // PluginControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.ButtonReset);
             this.Controls.Add(this.GroupStep4);
             this.Controls.Add(this.GroupStep1);
             this.Controls.Add(this.LabelMainOutput);
@@ -373,5 +385,6 @@
         private System.Windows.Forms.RadioButton RadioReportOnly;
         private System.Windows.Forms.ColumnHeader chFileSize;
         private System.Windows.Forms.RadioButton RadioFiles;
+        private System.Windows.Forms.Button ButtonReset;
     }
 }

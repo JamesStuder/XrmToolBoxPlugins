@@ -32,15 +32,15 @@ namespace BulkAttachmentManagementPlugin.Data_Access_Objects
             }
         }
 
-        public string CreateLocalDirectory(string fileLocation, bool isNewAttachment, bool isCsvLocation, bool isMimeAttachment)
+        public string CreateLocalDirectory(string fileLocation, bool isNewAttachment, bool isCsvLocation, string folderName)
         {
-            string filePath = (isCsvLocation) ? Path.GetDirectoryName(fileLocation) : fileLocation;
+            string filePath = isCsvLocation ? Path.GetDirectoryName(fileLocation) : fileLocation;
             
             if(!isNewAttachment)
             {
                 if (filePath != null)
                 {
-                    filePath = Path.Combine(filePath, isMimeAttachment ? "E-Mail Attachments" : "Note Attachments");
+                    filePath = Path.Combine(filePath, folderName);
                 }
                     
             }

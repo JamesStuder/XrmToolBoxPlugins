@@ -114,6 +114,13 @@ namespace BulkAttachmentManagementPlugin
                 }
             });
         }
+
+        private void ButtonReset_Click(object sender, EventArgs e)
+        {
+            ListViewMainOutput.Clear();
+            GroupStep2.Enabled = false;
+            GroupStep3.Enabled = false;
+        }
         #endregion
 
         #region Radio Buttons
@@ -233,7 +240,7 @@ namespace BulkAttachmentManagementPlugin
                     LocalFileSystemDao localDao = new LocalFileSystemDao();
 
                     List<Guid> oAttachmentGuids = RadioDownloadAll.Checked ? crmDao.GetListOfAttachments(Service) : localDao.ReadFromCsv(TextBoxCsvLocation.Text);
-                    string fileDirectory = RadioDownloadAll.Checked ? localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, false, false) : localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, true, false);
+                    string fileDirectory = RadioDownloadAll.Checked ? localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, false, PluginConstants.FolderNotes) : localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, true, PluginConstants.FolderNotes);
                     for (int index = 0; index < oAttachmentGuids.Count; index++)
                     {
                         string processingMessage = $"Processing {index} of {oAttachmentGuids.Count}";
@@ -248,7 +255,7 @@ namespace BulkAttachmentManagementPlugin
                             oNoteData = crmDao.GetNoteAttachmentData(attachment, Service);
                             if (oNoteData != null && oNoteData[Annotation.FileSize].ToString() != "0")
                             {
-                                storeAttachmentDirectory = localDao.CreateLocalDirectory(Path.Combine(fileDirectory, oNoteData.Id.ToString()), true, false, false);
+                                storeAttachmentDirectory = localDao.CreateLocalDirectory(Path.Combine(fileDirectory, oNoteData.Id.ToString()), true, false, PluginConstants.FolderNotes);
                                 localDao.CreateAttachmentFile(oNoteData[Annotation.DocumentBody].ToString(), storeAttachmentDirectory, oNoteData[Annotation.FileName].ToString());
 
                                 listViewItem.SubItems.Add(oNoteData[Annotation.PrimaryKey].ToString());
@@ -303,7 +310,7 @@ namespace BulkAttachmentManagementPlugin
 
                     List<Guid> oAttachmentGuids = RadioDownloadAll.Checked ? crmDao.GetListOfActivityMimeAttachmentGuids(Service) : localDao.ReadFromCsv(TextBoxCsvLocation.Text);
                     
-                    string fileDirectory = RadioDownloadAll.Checked ? localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, false, true) : localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, true, true);
+                    string fileDirectory = RadioDownloadAll.Checked ? localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, false, PluginConstants.FolderEmails) : localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, true, PluginConstants.FolderEmails);
                     for (int index = 0; index < oAttachmentGuids.Count; index++)
                     {
                         string processingMessage = $"Processing {index} of {oAttachmentGuids.Count}";
@@ -319,7 +326,7 @@ namespace BulkAttachmentManagementPlugin
 
                             if (oEMailData[ActivityMimeAttachment.FileSize].ToString() != "0")
                             {
-                                storeAttachmentDirectory = localDao.CreateLocalDirectory(Path.Combine(fileDirectory, oEMailData.Id.ToString()), true, false, true);
+                                storeAttachmentDirectory = localDao.CreateLocalDirectory(Path.Combine(fileDirectory, oEMailData.Id.ToString()), true, false, PluginConstants.FolderEmails);
                                 localDao.CreateAttachmentFile(oEMailData[ActivityMimeAttachment.Body].ToString(), storeAttachmentDirectory, oEMailData[ActivityMimeAttachment.FileName].ToString());
 
                                 listViewItem.SubItems.Add(oEMailData[ActivityMimeAttachment.PrimaryKey].ToString());
@@ -373,7 +380,7 @@ namespace BulkAttachmentManagementPlugin
 
                     List<Guid> oAttachmentGuids = RadioDownloadAll.Checked ? crmDao.GetListOfFileAttachmentGuids(Service) : localDao.ReadFromCsv(TextBoxCsvLocation.Text);
 
-                    string fileDirectory = RadioDownloadAll.Checked ? localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, false, true) : localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, true, true);
+                    string fileDirectory = RadioDownloadAll.Checked ? localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, false, PluginConstants.FolderEmails) : localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, true, PluginConstants.FolderFiles);
                     for (int index = 0; index < oAttachmentGuids.Count; index++)
                     {
                         string processingMessage = $"Processing {index} of {oAttachmentGuids.Count}";
@@ -389,7 +396,7 @@ namespace BulkAttachmentManagementPlugin
 
                             if (oFileData[FileAttachment.FileSize].ToString() != "0")
                             {
-                                storeAttachmentDirectory = localDao.CreateLocalDirectory(Path.Combine(fileDirectory, oFileData.Id.ToString()), true, false, true);
+                                storeAttachmentDirectory = localDao.CreateLocalDirectory(Path.Combine(fileDirectory, oFileData.Id.ToString()), true, false, PluginConstants.FolderFiles);
                                 byte[] fileAttachment = crmDao.DownloadFileAttribute(((EntityReference)oFileData[FileAttachment.ObjectId]).LogicalName, ((EntityReference)oFileData[FileAttachment.ObjectId]).Id, (string)oFileData[FileAttachment.RegardingFieldName], Service);
                                 localDao.CreateAttachmentFile(fileAttachment, storeAttachmentDirectory, oFileData[FileAttachment.FileName].ToString());
 
