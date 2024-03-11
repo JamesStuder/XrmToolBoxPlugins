@@ -13,16 +13,11 @@ using BulkAttachmentManagementPlugin.Models;
 
 namespace BulkAttachmentManagementPlugin
 {
-    public partial class PluginControl : PluginControlBase, IGitHubPlugin, IPayPalPlugin, IHelpPlugin
+    public partial class PluginControl : PluginControlBase, IGitHubPlugin, IHelpPlugin
     {
         #region GitHub Info
         public string RepositoryName => "XrmToolBoxPlugins";
         public string UserName => "medicstuder";
-        #endregion
-
-        #region PayPal Info
-        public string DonationDescription => "Support For Bulk Attachment Manager";
-        public string EmailAccount => "jczstuder@gmail.com";
         #endregion
 
         #region Help Info
