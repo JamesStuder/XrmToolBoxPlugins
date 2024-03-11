@@ -66,5 +66,15 @@ namespace BulkAttachmentManagementPlugin.Data_Access_Objects
                 fStream.Write(fileContent, 0, fileContent.Length);
             }
         }
+
+        public void CreateAttachmentFile(byte[] documentBody, string filePath, string fileName)
+        {
+            string fullPath = Path.Combine(filePath, fileName);
+
+            using (FileStream fStream = new FileStream(fullPath, FileMode.OpenOrCreate))
+            {
+                fStream.Write(documentBody, 0, documentBody.Length);
+            }
+        }
     }
 }

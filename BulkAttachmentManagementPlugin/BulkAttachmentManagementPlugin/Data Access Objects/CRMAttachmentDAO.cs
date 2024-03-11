@@ -149,6 +149,18 @@ namespace BulkAttachmentManagementPlugin.Data_Access_Objects
         }
 
         /// <summary>
+        /// Method to File attachment.
+        /// </summary>
+        /// <param name="fileAttachmentId">Guid of the file attachment</param>
+        /// <param name="service">CRM Service</param>
+        /// <returns></returns>
+        public Entity GetFileAttachmentData(Guid fileAttachmentId, IOrganizationService service)
+        {
+            OrganizationServiceContext xrmContext = new OrganizationServiceContext(service);
+            return xrmContext.CreateQuery(FileAttachment.EntityLogicalName).SingleOrDefault(n => (Guid)n[FileAttachment.PrimaryKey] == fileAttachmentId);
+        }
+        
+        /// <summary>
         /// Retrieve file stored in file attribute for entity
         /// </summary>
         /// <param name="entityLogicalName">Logic name of the entity</param>
