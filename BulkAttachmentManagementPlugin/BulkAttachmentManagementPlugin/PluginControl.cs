@@ -118,6 +118,7 @@ namespace BulkAttachmentManagementPlugin
         private void ButtonReset_Click(object sender, EventArgs e)
         {
             ListViewMainOutput.Clear();
+            TextBoxCsvLocation.Text = "";
             GroupStep2.Enabled = false;
             GroupStep3.Enabled = false;
         }
@@ -290,7 +291,7 @@ namespace BulkAttachmentManagementPlugin
                 },
                 ProgressChanged = args =>
                 {
-                    SetWorkingMessage($"{args.ProgressPercentage} Completed.  {args.UserState}");
+                    SetWorkingMessage($"{args.ProgressPercentage}% Completed.  {args.UserState}");
                 }
             });
         }
@@ -360,7 +361,7 @@ namespace BulkAttachmentManagementPlugin
                 },
                 ProgressChanged = args =>
                 {
-                    SetWorkingMessage($"{args.ProgressPercentage} Completed.  {args.UserState}");
+                    SetWorkingMessage($"{args.ProgressPercentage}% Completed.  {args.UserState}");
                 }
             });
         }
@@ -380,7 +381,7 @@ namespace BulkAttachmentManagementPlugin
 
                     List<Guid> oAttachmentGuids = RadioDownloadAll.Checked ? crmDao.GetListOfFileAttachmentGuids(Service) : localDao.ReadFromCsv(TextBoxCsvLocation.Text);
 
-                    string fileDirectory = RadioDownloadAll.Checked ? localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, false, PluginConstants.FolderEmails) : localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, true, PluginConstants.FolderFiles);
+                    string fileDirectory = RadioDownloadAll.Checked ? localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, false, PluginConstants.FolderFiles) : localDao.CreateLocalDirectory(TextBoxCsvLocation.Text, false, true, PluginConstants.FolderFiles);
                     for (int index = 0; index < oAttachmentGuids.Count; index++)
                     {
                         string processingMessage = $"Processing {index} of {oAttachmentGuids.Count}";
@@ -396,8 +397,8 @@ namespace BulkAttachmentManagementPlugin
 
                             if (oFileData[FileAttachment.FileSize].ToString() != "0")
                             {
-                                storeAttachmentDirectory = localDao.CreateLocalDirectory(Path.Combine(fileDirectory, oFileData.Id.ToString()), true, false, PluginConstants.FolderFiles);
                                 byte[] fileAttachment = crmDao.DownloadFileAttribute(((EntityReference)oFileData[FileAttachment.ObjectId]).LogicalName, ((EntityReference)oFileData[FileAttachment.ObjectId]).Id, (string)oFileData[FileAttachment.RegardingFieldName], Service);
+                                storeAttachmentDirectory = localDao.CreateLocalDirectory(Path.Combine(fileDirectory, oFileData.Id.ToString()), true, false, PluginConstants.FolderFiles);
                                 localDao.CreateAttachmentFile(fileAttachment, storeAttachmentDirectory, oFileData[FileAttachment.FileName].ToString());
 
                                 listViewItem.SubItems.Add(oFileData[FileAttachment.PrimaryKey].ToString());
@@ -431,7 +432,7 @@ namespace BulkAttachmentManagementPlugin
                 },
                 ProgressChanged = args =>
                 {
-                    SetWorkingMessage($"{args.ProgressPercentage} Completed.  {args.UserState}");
+                    SetWorkingMessage($"{args.ProgressPercentage}% Completed.  {args.UserState}");
                 }
             });
         }
@@ -485,7 +486,7 @@ namespace BulkAttachmentManagementPlugin
                 },
                 ProgressChanged = args =>
                 {
-                    SetWorkingMessage($"{args.ProgressPercentage} Completed.  {args.UserState}");
+                    SetWorkingMessage($"{args.ProgressPercentage}% Completed.  {args.UserState}");
                 }
             });
         }
@@ -535,7 +536,7 @@ namespace BulkAttachmentManagementPlugin
                 },
                 ProgressChanged = args =>
                 {
-                    SetWorkingMessage($"{args.ProgressPercentage} Completed.  {args.UserState}");
+                    SetWorkingMessage($"{args.ProgressPercentage}% Completed.  {args.UserState}");
                 }
             });
         }
@@ -585,7 +586,7 @@ namespace BulkAttachmentManagementPlugin
                 },
                 ProgressChanged = args =>
                 {
-                    SetWorkingMessage($"{args.ProgressPercentage} Completed.  {args.UserState}");
+                    SetWorkingMessage($"{args.ProgressPercentage}% Completed.  {args.UserState}");
                 }
             });
         }
