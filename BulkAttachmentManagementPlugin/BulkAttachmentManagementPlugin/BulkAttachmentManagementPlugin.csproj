@@ -206,6 +206,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AttachmentManagementPlugin.cs" />
+    <Compile Include="Constants\FileAttachment.cs" />
     <Compile Include="Constants\ActivityMimeAttachment.cs" />
     <Compile Include="Constants\Annotation.cs" />
     <Compile Include="Constants\PluginConstants.cs" />

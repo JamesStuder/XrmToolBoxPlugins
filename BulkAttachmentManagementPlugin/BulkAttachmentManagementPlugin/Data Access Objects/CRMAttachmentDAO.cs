@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using BulkAttachmentManagementPlugin.Constants;
+using Microsoft.Crm.Sdk.Messages;
 
 namespace BulkAttachmentManagementPlugin.Data_Access_Objects
 {
@@ -108,6 +109,70 @@ namespace BulkAttachmentManagementPlugin.Data_Access_Objects
                                                     }).ToList();
 
             return oMimeAttachments;
+        }
+
+        /// <summary>
+        /// Method to get list of file attachments where file name is not null
+        /// </summary>
+        /// <param name="service">CRM Service</param>
+        /// <returns>List of guids</returns>
+        public List<Guid> GetListOfFileAttachmentGuids(IOrganizationService service)
+        {
+            OrganizationServiceContext xrmContext = new OrganizationServiceContext(service);
+            List<Guid> oFileAttachments = xrmContext.CreateQuery(FileAttachment.EntityLogicalName).Where(e => e[FileAttachment.FileName] != null).Select(e => Guid.Parse(e[FileAttachment.PrimaryKey].ToString())).ToList();
+            return oFileAttachments;
+        }
+        
+        /// <summary>
+        /// Method to get data for reporting on file attachments in CRM
+        /// </summary>
+        /// <param name="service">CRM Service</param>
+        /// <returns></returns>
+        public List<OutputModel> ReportFileAttachments(IOrganizationService service)
+        {
+            OrganizationServiceContext xrmContext = new OrganizationServiceContext(service);
+
+            List<OutputModel> oFileAttachments = (from e in xrmContext.CreateQuery(FileAttachment.EntityLogicalName)
+                                                    where e[FileAttachment.FileName] != null
+                                                    select new OutputModel
+                                                    {
+                                                        DateTimeProcessed = DateTime.Now.ToString(CultureInfo.InvariantCulture),
+                                                        Guid = e[FileAttachment.PrimaryKey].ToString(),
+                                                        FileName = e[FileAttachment.FileName].ToString(),
+                                                        FileSize = e[FileAttachment.FileSize].ToString(),
+                                                        DownloadLocation = PluginConstants.ReportsOnlyDownloadLocation,
+                                                        RegardingEntity = e[FileAttachment.ObjectTypeCode].ToString(),
+                                                        RegardingId = ((EntityReference)e[FileAttachment.ObjectId]).Id.ToString()
+                                                    }).ToList();
+
+            return oFileAttachments;
+        }
+
+        /// <summary>
+        /// Retrieve file stored in file attribute for entity
+        /// </summary>
+        /// <param name="entityLogicalName">Logic name of the entity</param>
+        /// <param name="recordId">Guid of the record</param>
+        /// <param name="fileAttribute">File attribute</param>
+        /// <param name="service">CRM Service</param>
+        /// <returns>Byte array containing the file data</returns>
+        public byte[] DownloadFileAttribute(string entityLogicalName, Guid recordId, string fileAttribute, IOrganizationService service)
+        {
+            InitializeFileBlocksDownloadRequest fileDownloadRequest = new InitializeFileBlocksDownloadRequest
+            {
+                Target = new EntityReference(entityLogicalName, recordId),
+                FileAttributeName = fileAttribute
+            };
+
+            InitializeFileBlocksDownloadResponse filesBlocksDownloadResponse = (InitializeFileBlocksDownloadResponse)service.Execute(fileDownloadRequest);
+            
+            DownloadBlockRequest downloadBlockRequest = new DownloadBlockRequest
+            {
+                FileContinuationToken = filesBlocksDownloadResponse.FileContinuationToken
+            };
+
+            DownloadBlockResponse downloadBlockResponse = (DownloadBlockResponse)service.Execute(downloadBlockRequest);
+            return downloadBlockResponse.Data;
         }
     }
 }
